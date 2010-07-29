@@ -7,23 +7,33 @@ import java.lang.{ProcessBuilder,Process}
 import java.lang.Thread
 import java.io._
 
-case class RunPlayer(val port: Int)
+class Dumper(in: InputStream) extends Thread {
+	override def run() {
+		val reader = new BufferedReader(new InputStreamReader(in))
+		var line: String = ""
+		do {
+			line = reader.readLine()
+			println("#####: " + line)
+		} while(line != null)
+	}
+}
+
+case class RunPlayer()
 
 class Game extends Actor with Logging {
 	var player: ActorRef = _
 
-	def runPlayer(port: Int) {
-		RemoteNode.start("localhost", port)
-		RemoteNode.register("game", actorOf[Game])
-
+	def runPlayer {
 		val cp = "/home/alex/scm/reversi/lib_managed/scala_2.8.0.RC3/compile/*:/home/alex/scm/reversi/target/scala_2.8.0.RC3/classes:/home/alex/scm/reversi/project/boot/scala-2.8.0.RC3/lib/scala-library.jar"
 		println("MARK 2")
 
-		val p = new ProcessBuilder("/opt/scala/bin/scala", "-cp", cp, "Server", port.toString).start()
+		val p = new ProcessBuilder("/opt/scala/bin/scala", "-cp", cp, "Server", "9998").start()
+		(new Dumper(p.getErrorStream())).start()
+		(new Dumper(p.getInputStream())).start()
 	}
 
 	def receive = {
-		case RunPlayer(port) => runPlayer(port)
+		case RunPlayer => runPlayer
 
 		case "Started" =>
 			player = self.sender.get						
@@ -35,7 +45,11 @@ class Game extends Actor with Logging {
 object RunGame {
 	def main(args: Array[String]) {
 		val game = actorOf[Game]
+
+		RemoteNode.start("localhost", 9998)
+		RemoteNode.register("game", game)
+
 		game.start
-		game ! new RunPlayer(9999)
+		game ! RunPlayer
 	}
 }
