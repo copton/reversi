@@ -1,3 +1,5 @@
 lib
 target
 project/boot
+project/plugins/lib_managed
+project/plugins/src_managed
