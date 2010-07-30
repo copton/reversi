@@ -9,7 +9,8 @@ class GameBoard extends reversi.GameBoard {
     board(4).update(3, Color.RED)
     board(4).update(4, Color.GREEN)
 
-	val dirs = for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Position(x, y)
+    type Direction = Position
+	val dirs = for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Direction(x, y)
 
     def getOccupation(pos: Position): Occupation = board(pos.x)(pos.y)
 
@@ -32,12 +33,14 @@ class GameBoard extends reversi.GameBoard {
 		newPos.isValid && getOccupation(newPos) == otherColor && followDirection(newPos, dir, col)
 	}
    
-    def checkMove(pos: Position, color: Color): Boolean =
+    private def getMoves(pos: Position, color: Color): List[Direction] =
 		if (getOccupation(pos) != Occupation.FREE) {
-			false
+			Nil
 		} else {
-			dirs.foldLeft(false)((ac, dir) => ac || checkDirection(pos, dir, color))
+			dirs.foldLeft(Nil:List[Direction])((ac, dir) => if(checkDirection(pos, dir, color)) dir::ac else ac)
 		}
+
+    def checkMove(pos: Position, color: Color): Boolean = getMoves(pos, color).isEmpty
    
     def makeMove(pos: Position, color: Color): GameBoard = {
 		this
