@@ -11,7 +11,7 @@ public class Position {
 
     public Position add(int _x, int _y)
     {
-        return new Positoin(x + _x, y + _y);
+        return new Position(x + _x, y + _y);
     }
     
     public Position add(Position p)
@@ -21,6 +21,6 @@ public class Position {
 
     public boolean isValid()
     {
-        return (x >= 0 && x<GameBoard.size && y >=0 and y<GameBoard.size);
+        return (x >= 0 && x < GameBoard.size && y >= 0 && y < GameBoard.size);
     }
 }
