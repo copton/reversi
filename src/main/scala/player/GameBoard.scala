@@ -4,6 +4,10 @@ import annotation._
 
 class GameBoard extends reversi.GameBoard {
 	val board : Array[Array[Occupation]] = Array.fill(reversi.GameBoard.size, reversi.GameBoard.size)(Occupation.FREE)
+    board(3).update(3, Color.GREEN)
+    board(3).update(4, Color.RED)
+    board(4).update(3, Color.RED)
+    board(4).update(4, Color.GREEN)
 
 	val dirs = for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Position(x, y)
 
