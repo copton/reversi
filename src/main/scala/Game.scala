@@ -24,9 +24,7 @@ class Game extends Actor with Logging {
 	var player: ActorRef = _
 
 	def runPlayer {
-		val cp = "/home/alex/scm/reversi/lib_managed/scala_2.8.0.RC3/compile/*:/home/alex/scm/reversi/target/scala_2.8.0.RC3/classes:/home/alex/scm/reversi/project/boot/scala-2.8.0.RC3/lib/scala-library.jar"
-		println("MARK 2")
-
+		val cp = "lib_managed/scala_2.8.0.RC3/compile/*:target/scala_2.8.0.RC3/classes:project/boot/scala-2.8.0.RC3/lib/scala-library.jar:target/scala_2.8.0.RC3/resources"
 		val p = new ProcessBuilder("/opt/scala/bin/scala", "-cp", cp, "Server", "9998").start()
 		(new Dumper(p.getErrorStream())).start()
 		(new Dumper(p.getInputStream())).start()
