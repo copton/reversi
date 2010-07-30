@@ -11,32 +11,32 @@ trait ReversiGameMechanics {
   val Directions = (for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Position(x, y)).toList
 
   @tailrec
-  private def followDirection(board: Board, pos: Position, dir: Direction, col: Occupation): Boolean = {
+  private def followDirection(board: Board, pos: Position, dir: Direction, color: Color): Boolean = {
     val newPos = pos add dir
     if (! newPos.isValid)
       false
     else 
       getOccupation(board, newPos) match {
         case Occupation.FREE => false
-        case c: Occupation if c == col => true
-        case c: Occupation if c == col.other => followDirection(board, newPos, dir, col)
+        case c: Occupation if c == color => true
+        case c: Occupation if c == color.other => followDirection(board, newPos, dir, color)
       }
   }
 
-  private def checkDirection(board: Board, pos: Position, dir: Direction, col: Occupation): Boolean = {
+  private def checkDirection(board: Board, pos: Position, dir: Direction, color: Color): Boolean = {
     val newPos = pos add dir
-    val otherColor = col.other
-    newPos.isValid && getOccupation(board, newPos) == otherColor && followDirection(board, newPos, dir, col)
+    val otherColor = color.other
+    newPos.isValid && getOccupation(board, newPos) == otherColor && followDirection(board, newPos, dir, color)
   }
 
-  def getMoves(board: Board, pos: Position, color: Occupation): List[Direction] =
+  def getMoves(board: Board, pos: Position, color: Color): List[Direction] =
     if (getOccupation(board, pos) != Occupation.FREE) {
       Nil
     } else {
       Directions.filter(checkDirection(board, pos, _, color))
     }
 
-  def countStones(board: Board, color: Occupation): Int =
+  def countStones(board: Board, color: Color): Int =
     (for {
       column <- board
       occupation <- column
@@ -46,7 +46,7 @@ trait ReversiGameMechanics {
   def getOccupation(board: Board, pos: Position): Occupation = board(pos.x)(pos.y)
 
   @tailrec
-  private def setColor(board: Board, pos: Position, dir: Position, color: Occupation): Unit = {
+  private def setColor(board: Board, pos: Position, dir: Position, color: Color): Unit = {
     getOccupation(board, pos) match {
       case o: Occupation if o != color => 
         board(pos.x).update(pos.y, color)
@@ -55,7 +55,7 @@ trait ReversiGameMechanics {
     }
   }
 
-  def makeMove(board: Board, pos: Position, color: Occupation): Board = {
+  def makeMove(board: Board, pos: Position, color: Color): Board = {
     val moves = getMoves(board, pos, color)
     if(!moves.isEmpty) {
       val newBoard = board.clone
@@ -71,8 +71,8 @@ trait ReversiGameMechanics {
         s.append(
           getOccupation(board, new Position(x, y)) match {
             case Occupation.FREE  => ". "
-            case Occupation.GREEN => "O "
-            case Occupation.RED   => "X "
+            case Color.GREEN => "O "
+            case Color.RED=> "X "
         })
       }
       s.append("\n")
@@ -89,10 +89,10 @@ trait DefaultReversiGameBoard {
   {
     val centerB = (reversi.GameBoard.size / 2)
     val centerA = centerB - 1
-    board(centerA).update(centerA, Occupation.GREEN)
-    board(centerA).update(centerB, Occupation.RED)
-    board(centerB).update(centerA, Occupation.RED)
-    board(centerB).update(centerB, Occupation.GREEN)
+    board(centerA).update(centerA, Color.GREEN)
+    board(centerA).update(centerB, Color.RED)
+    board(centerB).update(centerA, Color.RED)
+    board(centerB).update(centerB, Color.GREEN)
   }
 }
 

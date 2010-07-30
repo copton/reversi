@@ -1,14 +1,6 @@
 package reversi;
 
-public enum Occupation {
-    FREE, RED, GREEN;
-
-    public Occupation other() {
-        if (this == RED) return GREEN;
-        else return RED;
-    }
-
-    public static Occupation other(final Occupation c) {
-        return c.other();
-    }
+public class Occupation {
+    protected Occupation() {}
+    public final static Occupation FREE = new Occupation();
 }

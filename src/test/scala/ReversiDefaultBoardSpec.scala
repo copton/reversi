@@ -2,7 +2,7 @@ package test
 
 import org.specs._
 
-import _root_.reversi.{Occupation, GameBoard}
+import _root_.reversi.{Color, Occupation, GameBoard}
 import _root_.mechanics.DefaultReversiGameBoard
 
 class DefaultReversiGameBoardSpec extends Specification {
@@ -12,10 +12,10 @@ class DefaultReversiGameBoardSpec extends Specification {
   val board = new DefaultReversiGameBoard {}
   
   "default reversi board has red and green in starting positions" in {
-    board.board(centerA)(centerA) must be equalTo(Occupation.GREEN)
-    board.board(centerA)(centerB) must be equalTo(Occupation.RED)
-    board.board(centerB)(centerA) must be equalTo(Occupation.RED)
-    board.board(centerB)(centerB) must be equalTo(Occupation.GREEN)
+    board.board(centerA)(centerA) must be equalTo(Color.GREEN)
+    board.board(centerA)(centerB) must be equalTo(Color.RED)
+    board.board(centerB)(centerA) must be equalTo(Color.RED)
+    board.board(centerB)(centerB) must be equalTo(Color.GREEN)
   }
 
   "default reversi board only has 4 stone in the center" in {

@@ -6,13 +6,13 @@ import mechanics._
 
 class GameBoard extends reversi.GameBoard with DefaultReversiGameBoard with ReversiGameMechanics {
 
-  def checkMove(pos: Position, color: Occupation): Boolean = getMoves(board, pos, color).isEmpty
+  def checkMove(pos: Position, color: Color): Boolean = getMoves(board, pos, color).isEmpty
  
-  def makeMove(pos: Position, color: Occupation): GameBoard = this
+  def makeMove(pos: Position, color: Color): GameBoard = this
 
   def getOccupation(pos: Position): Occupation = getOccupation(board, pos)
 
-  def countStones(color: Occupation): Int = countStones(board, color)
+  def countStones(color: Color): Int = countStones(board, color)
 
   def dump(): String = dump(board)
 }
