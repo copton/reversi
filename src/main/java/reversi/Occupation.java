@@ -3,8 +3,12 @@ package reversi;
 public enum Occupation {
     FREE, RED, GREEN;
 
-    public static Occupation other(final Occupation c) {
-        if (c == RED) return GREEN;
+    public Occupation other() {
+        if (this == RED) return GREEN;
         else return RED;
+    }
+
+    public static Occupation other(final Occupation c) {
+        return c.other();
     }
 }
