@@ -20,7 +20,7 @@ class GameBoard extends reversi.GameBoard {
 		if (! newPos.isValid) false
 		else 
 			getOccupation(newPos) match {
-				case col => true
+				case c: Color if c == col => true
 				case Occupation.FREE => false
 				case otherColor => followDirection(newPos, dir, col)
 			}
