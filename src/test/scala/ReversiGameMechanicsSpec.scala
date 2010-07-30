@@ -21,7 +21,7 @@ class ReversiGameMechanicsSpec extends Specification {
     countStones(board.board, Occupation.RED) must be equalTo(2)
   }
 
-  "countStones(FREE) on default board returns " in {
+  "countStones(FREE) on default board returns 4 less than the square of the game board size" in {
     val board = new DefaultReversiGameBoard {}
     val size = (GameBoard.size * GameBoard.size) - 4
     countStones(board.board, Occupation.FREE) must be equalTo(size)
