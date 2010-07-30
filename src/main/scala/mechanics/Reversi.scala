@@ -8,10 +8,10 @@ trait ReversiGameMechanics {
   type Board = Array[Array[Occupation]]
   type Direction = Position
 
-  val Directions = for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Direction(x, y)
+  val Directions = (for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Position(x, y)).toList
 
   @tailrec
-  private def followDirection(board: Board, pos: Position, dir: Position, col: Occupation): Boolean = {
+  private def followDirection(board: Board, pos: Position, dir: Direction, col: Occupation): Boolean = {
     val newPos = pos add dir
     if (! newPos.isValid)
       false
@@ -23,7 +23,7 @@ trait ReversiGameMechanics {
       }
   }
 
-  private def checkDirection(board: Board, pos: Position, dir: Position, col: Occupation): Boolean = {
+  private def checkDirection(board: Board, pos: Position, dir: Direction, col: Occupation): Boolean = {
     val newPos = pos add dir
     val otherColor = col.other
     newPos.isValid && getOccupation(board, newPos) == otherColor && followDirection(board, newPos, dir, col)
@@ -33,7 +33,7 @@ trait ReversiGameMechanics {
     if (getOccupation(board, pos) != Occupation.FREE) {
       Nil
     } else {
-      Directions.foldLeft(Nil:List[Direction])((ac, dir) => if(checkDirection(board, pos, dir, color)) dir::ac else ac)
+      Directions.filter(checkDirection(board, pos, _, color))
     }
 
   def countStones(board: Board, color: Occupation): Int =
