@@ -47,13 +47,15 @@ class ReversiGameMechanicsSpec extends Specification {
       haveTheSameElementsAs(Nil)
   }
 
-  "foop" in {
+  "simple move flips one stone" in {
     val board = new DefaultReversiGameBoard {}
     val validation = new DefaultReversiGameBoard {}
     validation.board(centerB).update(centerB, Occupation.RED)
     validation.board(centerB).update(centerB + 1, Occupation.RED)
-    println(dump(makeMove(board.board, new Position(centerB, centerB + 1), Occupation.RED)))
-    makeMove(board.board, new Position(centerB, centerB + 1), Occupation.RED) must be equalTo(validation.board)
+    val newBoard = makeMove(board.board, new Position(centerB, centerB + 1), Occupation.RED)
+    for(x <- List.range(0, GameBoard.size); y <- List.range(0, GameBoard.size-1)) {
+      newBoard(x)(y) must be equalTo(validation.board(x)(y))
+    }
   }
 }
 
