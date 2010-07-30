@@ -9,9 +9,9 @@ public interface GameBoard {
     */
     public Occupation getOccupation(Position pos);
 
-    public boolean checkMove(Position pos, Color color);
+    public boolean checkMove(Position pos, Occupation color);
 
-    public GameBoard makeMove(Position pos, Color color);
+    public GameBoard makeMove(Position pos, Occupation color);
 
-    public int countStones(Color color);
+    public int countStones(Occupation color);
 }
