@@ -47,6 +47,14 @@ class ReversiGameMechanicsSpec extends Specification {
       haveTheSameElementsAs(Nil)
   }
 
+  "foop" in {
+    val board = new DefaultReversiGameBoard {}
+    val validation = new DefaultReversiGameBoard {}
+    validation.board(centerB).update(centerB, Occupation.RED)
+    validation.board(centerB).update(centerB + 1, Occupation.RED)
+    println(dump(makeMove(board.board, new Position(centerB, centerB + 1), Occupation.RED)))
+    makeMove(board.board, new Position(centerB, centerB + 1), Occupation.RED) must be equalTo(validation.board)
+  }
 }
 
 // vim: set ts=2 sw=2 et:

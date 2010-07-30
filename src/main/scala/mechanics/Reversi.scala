@@ -44,6 +44,41 @@ trait ReversiGameMechanics {
     } yield occupation).length
 
   def getOccupation(board: Board, pos: Position): Occupation = board(pos.x)(pos.y)
+
+  @tailrec
+  private def setColor(board: Board, pos: Position, dir: Position, color: Occupation): Unit = {
+    getOccupation(board, pos) match {
+      case o: Occupation if o != color => 
+        board(pos.x).update(pos.y, color)
+        setColor(board, pos add dir, dir, color)
+      case _ => 
+    }
+  }
+
+  def makeMove(board: Board, pos: Position, color: Occupation): Board = {
+    val moves = getMoves(board, pos, color)
+    if(!moves.isEmpty) {
+      val newBoard = board.clone
+      for(dir <- moves) setColor(newBoard, pos, dir, color)
+      newBoard
+    } else board
+  }
+
+  def dump(board: Board): String = {
+    val s: StringBuffer = new StringBuffer
+    for (x <- 0 to reversi.GameBoard.size - 1) {
+      for(y <- 0 to reversi.GameBoard.size - 1) {
+        s.append(
+          getOccupation(board, new Position(x, y)) match {
+            case Occupation.FREE  => ". "
+            case Occupation.GREEN => "O "
+            case Occupation.RED   => "X "
+        })
+      }
+      s.append("\n")
+    }
+    s.toString()
+  }
 }
 
 object ReversiGameMechanics extends ReversiGameMechanics

@@ -14,4 +14,6 @@ public interface GameBoard {
     public GameBoard makeMove(Position pos, Occupation color);
 
     public int countStones(Occupation color);
+
+    public String dump();
 }

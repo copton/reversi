@@ -13,4 +13,6 @@ class GameBoard extends reversi.GameBoard with DefaultReversiGameBoard with Reve
   def getOccupation(pos: Position): Occupation = getOccupation(board, pos)
 
   def countStones(color: Occupation): Int = countStones(board, color)
+
+  def dump(): String = dump(board)
 }
