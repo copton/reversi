@@ -7,8 +7,8 @@ import _root_.mechanics.DefaultReversiGameBoard
 
 class DefaultReversiGameBoardSpec extends Specification {
 
-  val centerA = (GameBoard.size / 2) - 1
-  val centerB = (GameBoard.size / 2)
+  val centerA = 3
+  val centerB = 4
   val board = new DefaultReversiGameBoard {}
   
   "default reversi board has red and green in starting positions" in {
@@ -24,8 +24,8 @@ class DefaultReversiGameBoardSpec extends Specification {
     board.board(centerB)(centerA) must not be equalTo(Occupation.FREE)
     board.board(centerB)(centerB) must not be equalTo(Occupation.FREE)
     for {
-      x <- 0 to GameBoard.size - 1
-      y <- 0 to GameBoard.size - 1
+      x <- 0 to 7
+      y <- 0 to 7
       if(!((x >= 3 && x <= 4) &&
            (y >= 3 && y <= 4)))
     } { board.board(x)(y) must be equalTo(Occupation.FREE) }

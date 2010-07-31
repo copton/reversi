@@ -1,8 +1,6 @@
 package reversi;
 
 public interface GameBoard {
-    public static final int size = 8;
-
    /**
     *
     * @throws IndexOutOfBoundsException

@@ -55,15 +55,15 @@ trait ReversiGameMechanics {
     val moves = getMoves(board, pos, color)
     if(!moves.isEmpty) {
       val newBoard = board.clone
-      for(dir <- moves) setColor(newBoard, pos, dir, color)
+      for(dir <- moves) flipStones(newBoard, pos, dir, color)
       newBoard
     } else board
   }
 
   def dump(board: Board): String = {
     val s: StringBuffer = new StringBuffer
-    for (x <- 0 to reversi.GameBoard.size - 1) {
-      for(y <- 0 to reversi.GameBoard.size - 1) {
+    for (x <- 0 to 7) {
+      for(y <- 0 to 7) {
         s.append(
           getOccupation(board, new Position(x, y)) match {
             case Occupation.FREE  => ". "
@@ -77,19 +77,20 @@ trait ReversiGameMechanics {
   }
 }
 
-object ReversiGameMechanics extends ReversiGameMechanics
+object ReversiGameMechanics extends ReversiGameMechanics {
+  val Directions = (for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Position(x, y)).toList
+
+  type Board = Array[Array[Occupation]]
+  type Direction = Position
+
+}
 
 trait DefaultReversiGameBoard {
-  val board : ReversiGameMechanics.Board = Array.fill(reversi.GameBoard.size, reversi.GameBoard.size)(Occupation.FREE)
-
-  {
-    val centerB = (reversi.GameBoard.size / 2)
-    val centerA = centerB - 1
-    board(centerA).update(centerA, Color.GREEN)
-    board(centerA).update(centerB, Color.RED)
-    board(centerB).update(centerA, Color.RED)
-    board(centerB).update(centerB, Color.GREEN)
-  }
+  val board : ReversiGameMechanics.Board = Array.fill(8, 8)(Occupation.FREE)
+  board(3).update(3, Color.GREEN)
+  board(3).update(4, Color.RED)
+  board(4).update(3, Color.RED)
+  board(4).update(4, Color.GREEN)
 }
 
 // vim: set ts=2 sw=2 et:

@@ -8,8 +8,8 @@ import _root_.mechanics.ReversiGameMechanics._
 
 class ReversiGameMechanicsSpec extends Specification {
 
-  val centerA = (GameBoard.size / 2) - 1
-  val centerB = (GameBoard.size / 2)
+  val centerA = 3
+  val centerB = 4
 
   "countStones(GREEN) on default board returns 2" in {
     val board = new DefaultReversiGameBoard {}
@@ -47,7 +47,7 @@ class ReversiGameMechanicsSpec extends Specification {
     validation.board(centerB).update(centerB, Color.RED)
     validation.board(centerB).update(centerB + 1, Color.RED)
     val newBoard = makeMove(board.board, new Position(centerB, centerB + 1), Color.RED)
-    for(x <- List.range(0, GameBoard.size); y <- List.range(0, GameBoard.size-1)) {
+    for(x <- List.range(0, 8); y <- List.range(0, 8)) {
       newBoard(x)(y) must be equalTo(validation.board(x)(y))
     }
   }
