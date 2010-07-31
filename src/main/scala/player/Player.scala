@@ -1,27 +1,33 @@
+package player
+
 import se.scalablesolutions.akka.actor.Actor
 import se.scalablesolutions.akka.actor.ActorRef
 import se.scalablesolutions.akka.actor.Actor._
 import se.scalablesolutions.akka.remote.{RemoteClient, RemoteNode}
 import se.scalablesolutions.akka.util.Logging
 
-class Player(val game: ActorRef) extends Actor {
+case object Run
+
+class Player(val name: String, val game: ActorRef) extends Actor {
   def receive = {
-	case "Run" => game ! "Started"
+	case Run => game ! _root_.game.Started(name)
     case "Hello" =>
       log.info("Received 'Hello'")
       self.reply("World")
   }
 }
 
-
-object Server extends Logging {
+object RunPlayer extends Logging {
 	def main(args: Array[String]) {
-		log.info("MARK 1")
-		val game = RemoteClient.actorFor("game", "localhost", args(0).toInt)
-		log.info("MARK 2")
-		val player = actorOf(new Player(game))
+		val name = args(0)
+		val playerPort = args(1).toInt
+		val gamePort = args(2).toInt
+		
+		RemoteNode.start("localhost", playerPort)
+		val game = RemoteClient.actorFor("game", "localhost", gamePort)
+		val player = actorOf(new Player(name, game))
+
 		player.start
-		player ! "Run"
-		log.info("MARK 3")
+		player ! Run
 	}
 }
