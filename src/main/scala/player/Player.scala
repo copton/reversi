@@ -10,7 +10,10 @@ case object Run
 
 class Player(val name: String, val game: ActorRef) extends Actor {
   def receive = {
-	case Run => game ! _root_.game.Started(name)
+	case Run => 
+		val player: reversi.Player = reversi.PlayerLoader.load(name);
+		player.nextMove(null, null)
+		game ! _root_.game.Started(name)
     case "Hello" =>
       log.info("Received 'Hello'")
       self.reply("World")
