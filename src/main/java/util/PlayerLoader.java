@@ -1,6 +1,7 @@
-package reversi;
+package util;
 
 import java.lang.reflect.Constructor;
+import reversi.Player;
 
 public class PlayerLoader {
     public static Player load(String name) {
