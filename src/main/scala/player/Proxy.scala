@@ -4,23 +4,19 @@ import java.lang.Thread
 
 class Proxy(val player: reversi.Player) extends reversi.GameControler {
   private var decision: Option[reversi.Position] = None
+
+  def update(position: reversi.Position) = decision = Some(position)
   
-  override def update(position: reversi.Position) = decision = Some(position)
-
-  def nextMove(): Option[reversi.Position] = {
-    None
+  def nextMove(board: reversi.GameBoard, lastMove: reversi.Position): Option[reversi.Position] = {
+    val thread = new PlayerThread(player, board, lastMove, this)
+    thread.start()
+    thread.join()
+    return decision
   }
 }
 
-class PlayerThread(val player: reversi.Player) extends Thread {
+class PlayerThread(val player: reversi.Player, val board: reversi.GameBoard, val lastMove: reversi.Position, val controler: reversi.GameControler) extends Thread {
   override def run() {
-    
-  }
-}
-
-class TimeoutThread(val thread: Thread) extends Thread {
-  override def run() {
-    Thread.sleep(5000)
-     
+    player.nextMove(board, lastMove, controler)
   }
 }

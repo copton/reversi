@@ -2,31 +2,36 @@ package game
 
 import java.lang.{ProcessBuilder,Process}
 import se.scalablesolutions.akka.util.Logging
-import java.io._
+import java.io.{InputStream, BufferedReader, InputStreamReader}
+import se.scalablesolutions.akka.actor.ActorRef
 
-class StreamLogger(in: InputStream) extends Thread with Logging {
+class StreamLogger(in: InputStream, logf: (String, Any*) => Unit) extends Thread {
 	override def run() {
 		val reader = new BufferedReader(new InputStreamReader(in))
 		var line: String = ""
 		do {
 			line = reader.readLine()
 			if (line != null) {
-				log.info(line)
+				logf(line)
 			}
 		} while(line != null)
 	}
 }
 
-class OutputLogger(proc: Process) {
-	val input = new StreamLogger(proc.getInputStream())
-	val output = new StreamLogger(proc.getErrorStream())
-	input.start()
-	output.start()
-}
-
-class PlayerProc(val player: Player, gamePort: Int) {
+class PlayerProc(val player: Player, val game: ActorRef, gamePort: Int) extends Thread with Logging {
+  start()
 	val proc = new ProcessBuilder("/opt/scala/bin/scala", "-cp", PlayerProc.cp, "player.RunPlayer", player.name, player.port.toString, gamePort.toString).start()
-	val logger = new OutputLogger(proc)
+	val input = new StreamLogger(proc.getInputStream(), log.info)
+	val output = new StreamLogger(proc.getErrorStream(), log.error)
+
+  override def run() {
+    input.start()
+    output.start()
+    input.join()
+    output.join()
+    val exitCode = proc.waitFor() 
+    game ! PlayerExit(player, exitCode)
+  }
 }
 
 object PlayerProc {

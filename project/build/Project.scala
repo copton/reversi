@@ -13,7 +13,7 @@ class MainProject(info: ProjectInfo) extends DefaultProject(info) with AkkaProje
 
   //Dependencies---
 
-  //val junit = "junit"  % "junit"  % "4.7"  % "test"
+  val junit = "junit"  % "junit"  % "4.7"  % "test"
   val specs = "org.scala-tools.testing"  % "specs_2.8.0.RC3"  % "1.6.5-SNAPSHOT"  % "test"
   val scalatest = "org.scalatest" % "scalatest" % "1.2-for-scala-2.8.0.RC3-SNAPSHOT" % "test"
 

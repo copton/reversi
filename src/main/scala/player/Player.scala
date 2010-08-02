@@ -5,14 +5,12 @@ import se.scalablesolutions.akka.actor.ActorRef
 import se.scalablesolutions.akka.actor.Actor._
 import se.scalablesolutions.akka.remote.{RemoteClient, RemoteNode}
 import se.scalablesolutions.akka.util.Logging
-import player.FromGameToPlayer._
-import player.FromPlayerToGame._
 
 class Player(val port: Int, val game: ActorRef) extends Actor {
   var proxy: Option[Proxy] = None
 
   override def init() {
-	  game ! FromPlayerToGame.Started(port)
+	  game ! _root_.game.Started(port)
   }
 
   def receive = {
@@ -20,10 +18,11 @@ class Player(val port: Int, val game: ActorRef) extends Actor {
       val player = util.PlayerLoader.load(name)
       player.initialize(color)
       proxy = Some(new Proxy(player))
-      game ! PlayerReady()
+      game ! _root_.game.PlayerReady(port)
 
-    case RequestNextMove(lastMove) =>
-      game ! ReportNextMove(proxy.get.nextMove())
+    case RequestNextMove(board, lastMove) =>
+      val position = proxy.get.nextMove(board, lastMove)
+      game ! _root_.game.ReportNextMove(position)
   }
 }
 
