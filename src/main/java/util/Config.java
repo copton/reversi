@@ -33,7 +33,7 @@ public class Config {
         properties = new Properties();
 
         try {
-            InputStream is = ClassLoader.getSystemResourceAsStream("reversi.properties");
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("reversi.properties");
             if (is == null) {
                 System.err.println("Could not find reversi.properties in classpath");
             } else {
