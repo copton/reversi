@@ -49,8 +49,8 @@ class Game(val gamePort: Int) extends Actor with Logging {
 
 object RunGame {
 	def main(args: Array[String]) {
-		val game = actorOf[Game]
 	  val gamePort = 10000	
+		val game = actorOf(new Game(gamePort))
 		RemoteNode.start("localhost", gamePort)
 		RemoteNode.register("game", game)
 

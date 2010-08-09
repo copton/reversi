@@ -5,24 +5,25 @@ import se.scalablesolutions.akka.util.Logging
 import java.io.{InputStream, BufferedReader, InputStreamReader}
 import se.scalablesolutions.akka.actor.ActorRef
 
-class StreamLogger(in: InputStream, logf: (String, Any*) => Unit) extends Thread {
+class StreamLogger(prefix: String, in: InputStream, logf: (String, Any*) => Unit) extends Thread {
 	override def run() {
 		val reader = new BufferedReader(new InputStreamReader(in))
 		var line: String = ""
 		do {
 			line = reader.readLine()
 			if (line != null) {
-				logf(line)
+				logf(prefix + ": " + line)
 			}
 		} while(line != null)
 	}
 }
 
 class PlayerProc(val player: Player, val game: ActorRef, gamePort: Int) extends Thread with Logging {
+	val proc = new ProcessBuilder("/opt/scala/bin/scala", "-cp", PlayerProc.cp, "player.RunPlayer", player.port.toString, gamePort.toString).start()
+	val input = new StreamLogger("player" + player.port, proc.getInputStream(), log.info)
+	val output = new StreamLogger("player" + player.port, proc.getErrorStream(), log.error)
+
   start()
-	val proc = new ProcessBuilder("/opt/scala/bin/scala", "-cp", PlayerProc.cp, "player.RunPlayer", player.name, player.port.toString, gamePort.toString).start()
-	val input = new StreamLogger(proc.getInputStream(), log.info)
-	val output = new StreamLogger(proc.getErrorStream(), log.error)
 
   override def run() {
     input.start()
