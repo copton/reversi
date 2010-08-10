@@ -21,7 +21,7 @@ public class Position implements Comparable<Position> {
 
     public boolean isValid()
     {
-        return (x >= 0 && x < GameBoard.size && y >= 0 && y < GameBoard.size);
+        return (x >= 0 && x < 8 && y >= 0 && y < 8);
     }
 
     @Override
