@@ -1,9 +1,7 @@
 package game
 
-import se.scalablesolutions.akka.actor.Actor
-import se.scalablesolutions.akka.actor.ActorRef
-import se.scalablesolutions.akka.actor.Actor._
-import se.scalablesolutions.akka.remote.{RemoteClient, RemoteNode}
+import se.scalablesolutions.akka.actor.{Actor, ActorRef}
+import se.scalablesolutions.akka.remote.RemoteServer
 import se.scalablesolutions.akka.util.Logging
 import scala.collection.mutable.HashMap
 
@@ -37,8 +35,8 @@ class Game(val gamePort: Int) extends Actor with Logging {
           player.actor.get ! _root_.player.LoadPlayer(player.name, player.color)
 			}
 
-    case PlayerReady =>
-       
+    case PlayerReady(port) =>
+      log.info("Player " + port + " is ready")
 
     case PlayerExit(player, exitCode) =>
       player.proc.get.join()
@@ -50,10 +48,11 @@ class Game(val gamePort: Int) extends Actor with Logging {
 object RunGame {
 	def main(args: Array[String]) {
 	  val gamePort = 10000	
-		val game = actorOf(new Game(gamePort))
-		RemoteNode.start("localhost", gamePort)
-		RemoteNode.register("game", game)
-
+    val gameServer = new RemoteServer
+    gameServer.start("localhost", gamePort)
+    val game = Actor.actorOf(new Game(gamePort))
+    gameServer.register("game", game)
+    
 		game.start
 		game ! RunPlayer(new Player("player.RandomPlayer", gamePort + 1, reversi.Color.RED))
 	}
