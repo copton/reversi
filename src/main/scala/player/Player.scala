@@ -31,13 +31,14 @@ object RunPlayer extends Logging {
 	def main(args: Array[String]) {
 		val playerPort = args(0).toInt
 		val gamePort = args(1).toInt
-
-    System.out.println("player port: " + playerPort)
-
-    RemoteNode.start("localhost", playerPort)
-
 		val game = RemoteClient.actorFor("game", "localhost", gamePort)
 
-    RemoteNode.register("player" + playerPort, actorOf(new Player(playerPort, game)))
-	}
+    System.out.println("MARK 1")
+
+    val playerServer = new RemoteServer
+    playerServer.start("localhost", playerPort)
+    val player = Actor.actorOf(new Player(playerPort, game))
+    playerServer.register("player" + playerPort, player)
+    player.start
+  }
 }
