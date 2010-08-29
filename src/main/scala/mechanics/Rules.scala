@@ -42,7 +42,7 @@ trait Rules { this: Board =>
     }
   }
 
-  protected def performMakeMove(pos: Position, color: Color): Unit = {
+  def performMakeMove(pos: Position, color: Color): Unit = {
     val moves = getMoves(pos, color)
     if(moves.isEmpty) {
       throw new reversi.GameBoard.InvalidMoveException
@@ -52,11 +52,12 @@ trait Rules { this: Board =>
   }
 
   def checkMove(pos: Position, col: Color): Boolean = ! getMoves(pos, col).isEmpty
+
+  def getPossibleMoves(color: Color): List[Position] = Board.Positions.filter(getMoves(_, color) != Nil)
 }
 
 object Rules {
   val Directions = (for (x <- -1 to 1; y <- -1 to 1; if (! (x==0 && y==0))) yield new Position(x, y)).toList
-
   type Direction = Position
 }
 

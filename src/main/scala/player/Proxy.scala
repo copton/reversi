@@ -7,7 +7,7 @@ class Proxy(val player: reversi.Player) extends reversi.GameControler {
 
   def update(position: reversi.Position) = decision = Some(position)
   
-  def nextMove(board: reversi.GameBoard, lastMove: reversi.Position): Option[reversi.Position] = {
+  def nextMove(board: reversi.GameBoard, lastMove: Option[reversi.Position]): Option[reversi.Position] = {
     val thread = new PlayerThread(player, board, lastMove, this)
     thread.start()
     thread.join()
@@ -15,8 +15,12 @@ class Proxy(val player: reversi.Player) extends reversi.GameControler {
   }
 }
 
-class PlayerThread(val player: reversi.Player, val board: reversi.GameBoard, val lastMove: reversi.Position, val controler: reversi.GameControler) extends Thread {
+class PlayerThread(val player: reversi.Player, val board: reversi.GameBoard, val lastMove: Option[reversi.Position], val controler: reversi.GameControler) extends Thread {
   override def run() {
-    player.nextMove(board, lastMove, controler)
+    if (lastMove.isDefined) {
+      player.nextMove(board, lastMove.get, controler)
+    } else {
+      player.nextMove(board, null, controler)
+    }
   }
 }

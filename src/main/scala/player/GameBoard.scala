@@ -3,7 +3,7 @@ package player
 import reversi.{Occupation, Position, Color}
 import mechanics._
 
-class GameBoard extends reversi.GameBoard with Rules with ArrayBoard with DefaultBoard {
+class GameBoard extends reversi.GameBoard with Rules with ArrayBoard with DefaultBoard with java.io.Serializable {
   override def makeMove(pos: Position, color: Color): GameBoard = {
     val newBoard = new GameBoard
     newBoard.copyFrom(this)

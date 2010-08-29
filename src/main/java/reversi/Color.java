@@ -1,6 +1,6 @@
 package reversi;
 
-public class Color extends Occupation implements java.io.Serializable {
+public class Color extends Occupation {
     protected Color() {}
     public final static Color RED = new Color();
     public final static Color GREEN = new Color();

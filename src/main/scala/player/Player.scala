@@ -9,6 +9,7 @@ import java.net.InetSocketAddress
 
 class Player(val port: Int, val game: ActorRef) extends Actor {
   var proxy: Option[Proxy] = None
+  self.homeAddress = ("localhost", port)
 
   override def init() {
 	  game ! _root_.game.Started(port)
@@ -23,7 +24,7 @@ class Player(val port: Int, val game: ActorRef) extends Actor {
 
     case RequestNextMove(board, lastMove) =>
       val position = proxy.get.nextMove(board, lastMove)
-      game ! _root_.game.ReportNextMove(position)
+      game ! _root_.game.ReportNextMove(port, position)
   }
 }
 
@@ -33,12 +34,7 @@ object RunPlayer extends Logging {
 		val gamePort = args(1).toInt
 		val game = RemoteClient.actorFor("game", "localhost", gamePort)
 
-    System.out.println("MARK 1")
-
-    val playerServer = new RemoteServer
-    playerServer.start("localhost", playerPort)
     val player = Actor.actorOf(new Player(playerPort, game))
-    playerServer.register("player" + playerPort, player)
     player.start
   }
 }

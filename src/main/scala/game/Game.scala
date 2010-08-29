@@ -4,44 +4,97 @@ import se.scalablesolutions.akka.actor.{Actor, ActorRef}
 import se.scalablesolutions.akka.remote.RemoteServer
 import se.scalablesolutions.akka.util.Logging
 import scala.collection.mutable.HashMap
+import reversi.{Color, Position}
 
 
-class Player(val name: String, val port: Int, val color: reversi.Color) {
+class Player(val name: String, val port: Int, val color: Color) {
 	var actor: Option[ActorRef] = None
 	var proc: Option[PlayerProc] = None
+  var ready = false
 }
 
-class Game(val gamePort: Int) extends Actor with Logging {
-	val players: HashMap[Int, Player] = new HashMap()
+class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Logging {
+  
+  assert ((players map (_.port)).distinct.size == players.size, "each player needs a different port!")
+
+  var board = new player.GameBoard()
+  var nextPlayer = 0
+  var lastMove: Option[Position] = None
+  var possibleMoves: List[Position] = Nil
+  var nextMovePending = false
+
+  override def init() {
+    for (player <- players) {
+      player.proc = Some(new PlayerProc(player, self, gamePort))
+      log.info("Player " + player.name + " started!")
+    }
+  }
+
+  private def nextMove() {
+    assert (nextMovePending == false , "game is in wrong state! nextMove is already pending")
+    nextMovePending = true
+ 
+    val player = players(nextPlayer)
+    possibleMoves = board.getPossibleMoves(player.color)
+  
+    if (possibleMoves == Nil && board.getPossibleMoves(Color.other(player.color)) == Nil) {
+      log.info("game finished")
+    } else {
+      player.actor.get ! _root_.player.RequestNextMove(board, lastMove)
+      nextPlayer = (nextPlayer + 1) % players.size
+    }
+  }
+
+  private def getPlayer(port: Int): Player = {
+      val playerOpt = players.find(_.port == port) 
+      assert (playerOpt.isDefined, "Received message from unknown player " + port)
+      playerOpt.get
+  }
 
 	def receive = {
-		case RunPlayer(player) => 
-      players.get(player.port) match {
-        case Some(_) =>
-          log.error("Player " + player.port + " already exists!")
-        case None =>
-          players += player.port -> player
-          player.proc = Some(new PlayerProc(player, self, gamePort))
-          log.info("Player " + player.name + " started!")
-      }
-
 		case Started(port) =>
-      players.get(port) match {
-        case None => 
-          log.error("Player " + port + " is not known")
-        case Some(player) =>
-          log.info("Player " + player.name + " started")
-          player.actor = Some(self.sender.get)
-          player.actor.get ! _root_.player.LoadPlayer(player.name, player.color)
-			}
+      val player = getPlayer(port)
+      log.info("Player " + player.name + " (" + port + ") started")
+      player.actor = Some(self.sender.get)
+      player.actor.get ! _root_.player.LoadPlayer(player.name, player.color)
+    
 
     case PlayerReady(port) =>
-      log.info("Player " + port + " is ready")
+      val player = getPlayer(port)
+      assert (player.ready == false, "Player " + port + " is already ready")
+      player.ready = true
+      log.info("Player " + player.name + " (" + port + ") is ready")
+      if (players.forall(_.ready == true)) {
+        log.info("All players are ready. Start game!")
+        nextMove()
+      }
+
+    case ReportNextMove(port, position) =>
+      assert (nextMovePending, "Unexpected ReportNextMove received")
+      nextMovePending = false
+      val player = getPlayer(port) 
+      if (possibleMoves == Nil) {
+        position match {
+          case None => 
+            log.info("player " + port + " passes")
+            nextMove()
+          case Some(pos) =>
+            log.info("Illegal move by player " + port + ": player's move is " + pos + ", but no move is possible on board\n" + board)
+        }
+      } else {
+        position match {
+          case None =>
+            log.info("Illegal move by player " + port + ": player passed, but moves are possible on board\n" + board)
+          case Some(pos) =>
+            log.info("player " + port + " makes move at " + pos)
+            board.performMakeMove(pos, player.color)
+            nextMove()
+        }
+      }
 
     case PlayerExit(player, exitCode) =>
       player.proc.get.join()
       log.info("Player " + player.name + " exited with exit code " + exitCode.toString + ".")
-	
   }
 }
 
@@ -50,10 +103,10 @@ object RunGame {
 	  val gamePort = 10000	
     val gameServer = new RemoteServer
     gameServer.start("localhost", gamePort)
-    val game = Actor.actorOf(new Game(gamePort))
+
+    val playerRed = new Player("player.RandomPlayer", gamePort + 1, Color.RED)
+    val playerGreen = new Player("player.RandomPlayer", gamePort + 2, Color.GREEN)
+    val game = Actor.actorOf(new Game(gamePort, Array(playerRed, playerGreen)))
     gameServer.register("game", game)
-    
-		game.start
-		game ! RunPlayer(new Player("player.RandomPlayer", gamePort + 1, reversi.Color.RED))
 	}
 }
