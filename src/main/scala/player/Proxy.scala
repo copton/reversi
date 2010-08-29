@@ -1,11 +1,15 @@
 package player
 
 import java.lang.Thread
+import se.scalablesolutions.akka.util.Logging
 
-class Proxy(val player: reversi.Player) extends reversi.GameControler {
+class Proxy(val player: reversi.Player) extends reversi.GameControler with Logging {
   private var decision: Option[reversi.Position] = None
 
-  def update(position: reversi.Position) = decision = Some(position)
+  def update(position: reversi.Position) {
+      log.info("!!!!!!!!!!!!!!!! update" + position)
+      decision = Some(position)
+  }
   
   def nextMove(board: reversi.GameBoard, lastMove: Option[reversi.Position]): Option[reversi.Position] = {
     val thread = new PlayerThread(player, board, lastMove, this)

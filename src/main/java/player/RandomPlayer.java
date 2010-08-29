@@ -22,10 +22,12 @@ public class RandomPlayer implements reversi.Player {
       for (int x=0; x<8; x++) {
         for (int y=0; y<8; y++) {
           Position pos = new Position(x, y);
-          if (board.checkMove(pos, color))
+          if (board.checkMove(pos, color)) {
             possibleMoves.add(pos);
+          }
         }
       }
+
       if (! possibleMoves.isEmpty()) {
         int move = rand.nextInt(possibleMoves.size());
         controler.update(possibleMoves.get(move));
