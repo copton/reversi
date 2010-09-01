@@ -3,24 +3,26 @@ package mechanics
 import reversi.{Position,Occupation,Color}
 
 trait Board {
+  import Board._
+
   def getOccupation(position: Position): Occupation
   protected def setOccupation(position: Position, occupation: Occupation): Unit
 
   def copyFrom(source: Board): Unit = {
-    for (pos <- Board.Positions) {
+    for (pos <- Positions) {
       setOccupation(pos, source.getOccupation(pos))
     }
   }
 
   override def toString(): String = {
     val s: StringBuffer = new StringBuffer
-    for (pos <- Board.Positions) {
+    for (pos <- Positions) {
       s.append(getOccupation(pos) match {
           case Occupation.FREE => " "
           case Color.RED => "X"
           case Color.GREEN => "O"
       })
-      if (pos.y == Board.size-1) {
+      if (pos.y == size-1) {
         s.append("\n")
       }
     }
