@@ -25,7 +25,7 @@ trait Rules { this: Board =>
     newPos.isValid && getOccupation(newPos) == otherColor && followDirection(newPos, dir, color)
   }
 
-  private def getMoves(pos: Position, color: Color): List[Direction] =
+  private[mechanics] def getMoves(pos: Position, color: Color): List[Direction] =
     if (getOccupation(pos) != Occupation.FREE) {
       Nil
     } else {
@@ -54,6 +54,8 @@ trait Rules { this: Board =>
   def checkMove(pos: Position, col: Color): Boolean = ! getMoves(pos, col).isEmpty
 
   def getPossibleMoves(color: Color): List[Position] = Board.Positions.filter(getMoves(_, color) != Nil)
+
+  def countStones(color: Color): Int = Board.Positions.count(getOccupation(_) == color)
 }
 
 object Rules {

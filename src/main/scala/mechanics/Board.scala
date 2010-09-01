@@ -12,7 +12,6 @@ trait Board {
     }
   }
 
-
   override def toString(): String = {
     val s: StringBuffer = new StringBuffer
     for (pos <- Board.Positions) {
@@ -39,7 +38,6 @@ trait ArrayBoard extends Board {
   def getOccupation(pos: Position): Occupation = fields(pos.x)(pos.y)
   def setOccupation(pos: Position, occupation: Occupation): Unit = fields(pos.x).update(pos.y, occupation)
 }
-
 
 trait DefaultBoard {this: Board =>
   setOccupation(new Position(3,3), Color.GREEN)
