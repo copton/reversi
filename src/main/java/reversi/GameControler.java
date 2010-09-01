@@ -13,4 +13,10 @@ public interface GameControler {
      * If this method is never called the player passes.
      */
     void update(Position position);
+
+
+    /**
+     * Log some information
+     */
+    void logger(String text);
 }

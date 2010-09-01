@@ -6,8 +6,11 @@ import se.scalablesolutions.akka.util.Logging
 class Proxy(val player: reversi.Player) extends reversi.GameControler with Logging {
   private var decision: Option[reversi.Position] = None
 
+  def logger(text: String) {
+    log.info("from player: " + text)
+  }
+
   def update(position: reversi.Position) {
-      log.info("!!!!!!!!!!!!!!!! update" + position)
       decision = Some(position)
   }
   

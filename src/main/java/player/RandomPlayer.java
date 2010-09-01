@@ -18,11 +18,13 @@ public class RandomPlayer implements reversi.Player {
 
     public void nextMove(GameBoard board, Position lastMove, reversi.GameControler controler)
     {
+      controler.logger("next move called: " + board);
       ArrayList<Position> possibleMoves = new ArrayList<Position>();
       for (int x=0; x<8; x++) {
         for (int y=0; y<8; y++) {
           Position pos = new Position(x, y);
           if (board.checkMove(pos, color)) {
+            controler.logger("adding position " + pos);
             possibleMoves.add(pos);
           }
         }

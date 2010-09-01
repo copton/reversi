@@ -16,12 +16,19 @@ trait Board {
 
   override def toString(): String = {
     val s: StringBuffer = new StringBuffer
+    s.append("\nFREE = " + Occupation.FREE)
+    s.append("\nRED = " + Color.RED)
+    s.append("\nGREEN = " + Color.GREEN)
+    s.append("\n")
     for (pos <- Positions) {
-      s.append(getOccupation(pos) match {
-          case Occupation.FREE => " "
-          case Color.RED => "X"
-          case Color.GREEN => "O"
-      })
+      val occupation = getOccupation(pos)
+      s.append(occupation) 
+//      s.append(occupation match {
+ //         case Occupation.FREE => " "
+ //         case Color.RED => "X"
+ //         case Color.GREEN => "O"
+ //         case _ => "?"
+ //     })
       if (pos.y == size-1) {
         s.append("\n")
       }
