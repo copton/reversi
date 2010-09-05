@@ -1,5 +1,6 @@
 lib
 lib_managed
+logs
 target
 project/boot
 project/plugins/lib_managed
