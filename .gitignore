@@ -1,5 +1,6 @@
 lib
 lib_managed
+logs
 target
 logs
 project/boot
