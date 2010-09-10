@@ -1,6 +1,6 @@
 package reversi;
 
-public class Position implements Comparable<Position> {
+public class Position implements Comparable<Position>, java.io.Serializable {
     final public int x;
     final public int y;
 

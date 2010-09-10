@@ -2,19 +2,19 @@ package reversi;
 
 public class Occupation implements java.io.Serializable, Comparable<Occupation> {
 
-    public final static Occupation FREE = new Occupation(100, "FREE");
+    public final static Occupation FREE = new Occupation(0, " ");
 
     private final int index;
-    public final String name;
+    public final String representation;
 
-    protected Occupation(final int index, final String name) {
+    protected Occupation(final int index, final String representation) {
         this.index = index;
-        this.name = name;
+        this.representation = representation;
     }
 
     @Override
     public String toString() {
-        return name;
+        return representation;
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.net.InetSocketAddress
 
 class Player(val port: Int, val game: ActorRef) extends Actor {
   var proxy: Option[Proxy] = None
+
   self.homeAddress = ("localhost", port)
 
   override def init() {
@@ -18,13 +19,13 @@ class Player(val port: Int, val game: ActorRef) extends Actor {
   def receive = {
     case LoadPlayer(name, color) => 
       val player = util.PlayerLoader.load(name)
+      val logPrefix = "from player " + port + "(" + color + "): "
       player.initialize(color)
-      proxy = Some(new Proxy(player))
+      proxy = Some(new Proxy(player, logPrefix))
       game ! _root_.game.PlayerReady(port)
 
     case RequestNextMove(board, lastMove) =>
       val position = proxy.get.nextMove(board, lastMove)
-      log.info("!!!!!!!" + position)
       game ! _root_.game.ReportNextMove(port, position)
   }
 }

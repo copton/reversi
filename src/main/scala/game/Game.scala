@@ -38,7 +38,12 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
     possibleMoves = board.getPossibleMoves(player.color)
   
     if (possibleMoves == Nil && board.getPossibleMoves(Color.other(player.color)) == Nil) {
-      log.info("game finished")
+      log.info("game finished:" + board)
+      val redCount = board.countStones(Color.RED)
+      val greenCount = board.countStones(Color.GREEN)
+      if (redCount == greenCount) log.info("draw game")
+      else if (redCount > greenCount) log.info("RED player wins with " + redCount + " to " + greenCount + ".")
+      else log.info("GREEN player wins with " + redCount + " to " + greenCount + ".")
     } else {
       player.actor.get ! _root_.player.RequestNextMove(board, lastMove)
       nextPlayer = (nextPlayer + 1) % players.size
@@ -79,12 +84,12 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
             log.info("player " + port + " passes")
             nextMove()
           case Some(pos) =>
-            log.info("Illegal move by player " + port + ": player's move is " + pos + ", but no move is possible on board\n" + board)
+            log.info("Illegal move by player " + port + ": player's move is " + pos + ", but no move is possible on board " + board)
         }
       } else {
         position match {
           case None =>
-            log.info("Illegal move by player " + port + ": player passed, but moves are possible on board\n" + board)
+            log.info("Illegal move by player " + port + ": player passed, but moves are possible on board " + board)
           case Some(pos) =>
             log.info("player " + port + " makes move at " + pos)
             board.performMakeMove(pos, player.color)

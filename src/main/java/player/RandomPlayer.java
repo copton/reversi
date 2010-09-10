@@ -14,6 +14,7 @@ public class RandomPlayer implements reversi.Player {
     public void initialize(Color color)
     {
         this.color = color;
+        this.rand = new Random();
     }
 
     public void nextMove(GameBoard board, Position lastMove, reversi.GameControler controler)

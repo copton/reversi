@@ -2,8 +2,8 @@ package reversi;
 
 public class Color extends Occupation {
 
-    public final static Color RED = new Color(100, "RED");
-    public final static Color GREEN = new Color(101, "GREEN");
+    public final static Color RED = new Color(1, "X");
+    public final static Color GREEN = new Color(2, "O");
 
     protected Color(final int index, final String name) {
         super(index, name);
