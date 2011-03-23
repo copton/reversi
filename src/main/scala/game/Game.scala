@@ -1,21 +1,20 @@
 package game
 
-import se.scalablesolutions.akka.actor.{Actor, ActorRef}
+import se.scalablesolutions.akka.actor.{ Actor, ActorRef }
 import se.scalablesolutions.akka.remote.RemoteServer
 import se.scalablesolutions.akka.util.Logging
 import scala.collection.mutable.HashMap
-import reversi.{Color, Position}
-
+import reversi.{ Color, Position }
 
 class Player(val name: String, val port: Int, val color: Color) {
-	var actor: Option[ActorRef] = None
-	var proc: Option[PlayerProc] = None
+  var actor: Option[ActorRef] = None
+  var proc: Option[PlayerProc] = None
   var ready = false
 }
 
 class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Logging {
-  
-  assert ((players map (_.port)).distinct.size == players.size, "each player needs a different port!")
+
+  assert((players map (_.port)).distinct.size == players.size, "each player needs a different port!")
 
   var board = new player.GameBoard()
   var nextPlayer = 0
@@ -31,12 +30,12 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
   }
 
   private def nextMove() {
-    assert (nextMovePending == false , "game is in wrong state! nextMove is already pending")
+    assert(nextMovePending == false, "game is in wrong state! nextMove is already pending")
     nextMovePending = true
- 
+
     val player = players(nextPlayer)
     possibleMoves = board.getPossibleMoves(player.color)
-  
+
     if (possibleMoves == Nil && board.getPossibleMoves(Color.other(player.color)) == Nil) {
       log.info("game finished:" + board)
       val redCount = board.countStones(Color.RED)
@@ -51,22 +50,21 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
   }
 
   private def getPlayer(port: Int): Player = {
-      val playerOpt = players.find(_.port == port) 
-      assert (playerOpt.isDefined, "Received message from unknown player " + port)
-      playerOpt.get
+    val playerOpt = players.find(_.port == port)
+    assert(playerOpt.isDefined, "Received message from unknown player " + port)
+    playerOpt.get
   }
 
-	def receive = {
-		case Started(port) =>
+  def receive = {
+    case Started(port) =>
       val player = getPlayer(port)
       log.info("Player " + player.name + " (" + port + ") started")
       player.actor = Some(self.sender.get)
       player.actor.get ! _root_.player.LoadPlayer(player.name, player.color)
-    
 
     case PlayerReady(port) =>
       val player = getPlayer(port)
-      assert (player.ready == false, "Player " + port + " is already ready")
+      assert(player.ready == false, "Player " + port + " is already ready")
       player.ready = true
       log.info("Player " + player.name + " (" + port + ") is ready")
       if (players.forall(_.ready == true)) {
@@ -75,12 +73,12 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
       }
 
     case ReportNextMove(port, position) =>
-      assert (nextMovePending, "Unexpected ReportNextMove received")
+      assert(nextMovePending, "Unexpected ReportNextMove received")
       nextMovePending = false
-      val player = getPlayer(port) 
+      val player = getPlayer(port)
       if (possibleMoves == Nil) {
         position match {
-          case None => 
+          case None =>
             log.info("player " + port + " passes")
             nextMove()
           case Some(pos) =>
@@ -104,8 +102,8 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
 }
 
 object RunGame {
-	def main(args: Array[String]) {
-	  val gamePort = 10000	
+  def main(args: Array[String]) {
+    val gamePort = 10000
     val gameServer = new RemoteServer
     gameServer.start("localhost", gamePort)
 
@@ -113,5 +111,5 @@ object RunGame {
     val playerGreen = new Player("player.RandomPlayer", gamePort + 2, Color.GREEN)
     val game = Actor.actorOf(new Game(gamePort, Array(playerRed, playerGreen)))
     gameServer.register("game", game)
-	}
+  }
 }
