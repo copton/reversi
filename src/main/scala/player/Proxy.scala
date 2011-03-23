@@ -1,7 +1,7 @@
 package player
 
 import java.lang.Thread
-import se.scalablesolutions.akka.util.Logging
+import akka.util.Logging
 
 class Proxy(val player: reversi.Player, val logPrefix: String) extends reversi.GameControler with Logging {
   private var decision: Option[reversi.Position] = None

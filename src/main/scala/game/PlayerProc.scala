@@ -1,9 +1,9 @@
 package game
 
 import java.lang.{ProcessBuilder,Process}
-import se.scalablesolutions.akka.util.Logging
+import akka.util.Logging
 import java.io.{InputStream, BufferedReader, InputStreamReader}
-import se.scalablesolutions.akka.actor.ActorRef
+import akka.actor.ActorRef
 import scala.util.Properties
 import scala.io.Source
 

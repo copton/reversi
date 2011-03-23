@@ -1,8 +1,8 @@
 package game
 
-import se.scalablesolutions.akka.actor.{Actor, ActorRef}
-import se.scalablesolutions.akka.remote.RemoteServer
-import se.scalablesolutions.akka.util.Logging
+import akka.actor.{Actor, ActorRef}
+//import akka.remote
+import akka.util.Logging
 import scala.collection.mutable.HashMap
 import reversi.{Color, Position}
 
@@ -106,8 +106,7 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
 object RunGame {
 	def main(args: Array[String]) {
 	  val gamePort = 10000	
-    val gameServer = new RemoteServer
-    gameServer.start("localhost", gamePort)
+    val gameServer = Actor.remote.start("localhost", gamePort)
 
     val playerRed = new Player("player.RandomPlayer", gamePort + 1, Color.RED)
     val playerGreen = new Player("player.RandomPlayer", gamePort + 2, Color.GREEN)

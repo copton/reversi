@@ -1,10 +1,10 @@
 package player
 
-import se.scalablesolutions.akka.actor.Actor
-import se.scalablesolutions.akka.actor.ActorRef
-import se.scalablesolutions.akka.actor.Actor._
-import se.scalablesolutions.akka.remote.{RemoteClient, RemoteNode, RemoteServer}
-import se.scalablesolutions.akka.util.Logging
+import akka.actor.Actor
+import akka.actor.ActorRef
+import akka.actor.Actor._
+//import akka.remote.{RemoteClient, RemoteNode, RemoteServer}
+import akka.util.Logging
 import java.net.InetSocketAddress
 
 class Player(val port: Int, val game: ActorRef) extends Actor {
@@ -34,7 +34,7 @@ object RunPlayer extends Logging {
 	def main(args: Array[String]) {
 		val playerPort = args(0).toInt
 		val gamePort = args(1).toInt
-		val game = RemoteClient.actorFor("game", "localhost", gamePort)
+    val game = Actor.remote.actorFor("game", "localhost", gamePort)
 
     val player = Actor.actorOf(new Player(playerPort, game))
     player.start

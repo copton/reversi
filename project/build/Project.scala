@@ -1,12 +1,12 @@
 import sbt._
 
-class MainProject(info: ProjectInfo) extends DefaultProject(info) with AkkaProject with IdeaProject {
+class MainProject(info: ProjectInfo) extends DefaultProject(info) with AkkaProject {
 
   //Repositories---
 
   val scala_tools_org = "scala-tools.org" at "http://scala-tools.org/repo-releases"
   val scala_tools_org_snapshots = "scala-tools.org.snapshots" at "http://scala-tools.org/repo-snapshots"
-  val akka_repo = "akka-repo" at "http://www.scalablesolutions.se/akka/repository"
+  val akka_repo = "Akka Maven Repository" at "http://www.scalablesolutions.se/akka/repository"
   val scalaToolsSnapshots = "Scala-Tools Maven Repository" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
 
   //---Repositories
@@ -18,6 +18,7 @@ class MainProject(info: ProjectInfo) extends DefaultProject(info) with AkkaProje
   val scalatest = "org.scalatest" % "scalatest" % "1.2" % "test"
 
   // Akka
+  val akkaRemote = akkaModule("remote")
   /** 
   val akkaAMQP = akkaModule("amqp")
   val akkaCamel = akkaModule("camel")
