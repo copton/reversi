@@ -1,13 +1,13 @@
-package tournement
+package tournament
 
-import se.scalablesolutions.akka.actor._
-import se.scalablesolutions.akka.util.Logging
-import se.scalablesolutions.akka.remote.RemoteServer
+import akka.actor._
+import akka.util.Logging
+//import akka.remote.RemoteServer
 import game._
-//import tournement.plan.Plan
+import tournament.plan.Plan
 
 
-class Tournement(plan: tournement.plan.Plan) extends Actor {
+class Tournement(plan: Plan) extends Actor {
 	
 	var currentGames = Unit
 	
@@ -35,9 +35,9 @@ class Tournement(plan: tournement.plan.Plan) extends Actor {
 			
 			
 		case SomethingWentWrong(error: GameError) => println("somethingWentWrong")
-		
+		*/
     	case _ =>      println("received unknown message")
-*/	
+
 }
 
 	
@@ -47,7 +47,7 @@ class Tournement(plan: tournement.plan.Plan) extends Actor {
 
 
 // for testing purposes
-
+/*
 object RunTournement {
 	def main(args: Array[String]) {
 	  val gamePort = 10000	
@@ -58,4 +58,4 @@ object RunTournement {
     val tournement = Actor.actorOf(new Tournement)
     gameServer.register("tournement", tournement)
 	}
-}
+} */

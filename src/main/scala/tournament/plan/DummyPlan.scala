@@ -1,4 +1,4 @@
-package tournement.plan
+package tournament.plan
 
 import scala.collection.immutable.List
 

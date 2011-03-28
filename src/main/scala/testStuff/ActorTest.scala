@@ -1,17 +1,13 @@
 package testStuff
 
-import se.scalablesolutions.akka.actor._
-import se.scalablesolutions.akka.util.Logging
-import se.scalablesolutions.akka.remote.RemoteServer
+import akka.actor._
+import akka.util.Logging
 import scala.util.Random
 
 class ActorTest extends Actor {
 	val random = new Random()
 	println("ActorTest Started!");
-//	while (true) {
-//		println("ActorTest: looping mainloop loops...");
-//		Thread.sleep(500 + Random.nextInt(2000))
-//	}
+
 	
 	def receive = {
 		case  TestMessage(i: Int) => println("ActorTest: received message number " + i)
@@ -25,7 +21,7 @@ case class TestMessage(i: Int)
 object RunActorTest {
 	def main(args: Array[String]) {
 	  val gamePort = 10000	
-	  val gameServer = new RemoteServer
+	  val gameServer = Actor.remote.start("localhost", gamePort)
 	  gameServer.start("localhost", gamePort)
 
     

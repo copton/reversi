@@ -1,4 +1,4 @@
-package tournement.plan
+package tournament.plan
 
 trait Plan {
 	
