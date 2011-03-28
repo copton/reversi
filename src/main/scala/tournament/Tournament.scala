@@ -19,9 +19,8 @@ class Tournement(plan: Plan) extends Actor {
 		/*
 		case Start => 
 			currentGames = plan.requestGames
-			for(players <- currentGames) {
-				var game = new Game()
-				game ! StarGame(players)
+			for(currentGame <- currentGames) {
+				
 			}
 		
 		case GameFinished(result: GameResult) => 
@@ -45,6 +44,7 @@ class Tournement(plan: Plan) extends Actor {
 	
 }
 
+case class Start()
 
 // for testing purposes
 /*

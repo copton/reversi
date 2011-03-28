@@ -1,12 +1,12 @@
 package game
 
-import tournement.misc._
+import tournament.misc._
 
 sealed trait Message
 
-// from Tournement (to Game)
+// from Tournement (to Game) ----> Propably in the constructor
 
-case class StartGame(players: List[String]) extends Message
+//case class StartGame(players: List[String], gameDetails: GameDetails) extends Message
 
 // from Game (to Tournement)
 

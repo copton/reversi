@@ -1,5 +1,5 @@
 package tournament.misc
 
-trait GameError {
+trait GameDetails {
 
 }

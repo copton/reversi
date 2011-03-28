@@ -1,24 +1,36 @@
 package tournament.plan
 
 import scala.collection.immutable.List
+import tournament.misc.GameResult
+import tournament.misc.GameDetails
+import tournament.misc.DummyGameDetails
 
 class DummyPlan extends Plan {
 
-  def deliverResult(result: Object): Unit = {  }
+  var count: Int = 0
 
-  def requestGame: List[String] = {
-	  return List("player.RandomPlayer","player.RandomPlayer")
+  def deliverResult(result: GameResult): Unit = {
+	println(result.winner)
+	
   }
+
   
-  def requestGames: List[List[String]] = {
-	  return List (
-	 		  		List("player.RandomPlayer","player.RandomPlayer"),
-	 		  		List("player.RandomPlayer","player.RandomPlayer"),
-	 		  		List("player.RandomPlayer","player.RandomPlayer")
-	 		  	   )
+  def requestGames: List[(List[String], GameDetails)] = {
+	  return List( (List("player.RandomPlayer","player.RandomPlayer"), new DummyGameDetails),
+		       (List("player.RandomPlayer","player.RandomPlayer"), new DummyGameDetails),
+		       (List("player.RandomPlayer","player.RandomPlayer"), new DummyGameDetails)
+			
+		 )
   }
 
-  def finished: Boolean = { false }
+  def finished: Boolean = { 
+	if(count == 0){
+		count = count + 1
+		return false
+	} else {
+		return true
+	}
+  }
 
   def getTournementInfo: TournementInfo = { null }
 
