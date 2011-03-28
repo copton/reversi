@@ -23,10 +23,10 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
   var possibleMoves: List[Position] = Nil
   var nextMovePending = false
 
-  override def init() {
+  override def preStart() {
     for (player <- players) {
       player.proc = Some(new PlayerProc(player, self, gamePort))
-      log.info("Player " + player.name + " started!")
+      log.info("Player " + player.name + " started! The port is " + player.port)
     }
   }
 
@@ -100,6 +100,8 @@ class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Log
     case PlayerExit(player, exitCode) =>
       player.proc.get.join()
       log.info("Player " + player.name + " exited with exit code " + exitCode.toString + ".")
+
+    case msg => log.info("received message: " + msg)
   }
 }
 

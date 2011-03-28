@@ -7,12 +7,14 @@ import akka.actor.Actor._
 import akka.util.Logging
 import java.net.InetSocketAddress
 
+
 class Player(val port: Int, val game: ActorRef) extends Actor {
   var proxy: Option[Proxy] = None
 
-  self.homeAddress = ("localhost", port)
+  //self.homeAddress = ("localhost", port)
 
-  override def init() {
+  override def preStart() {
+	  game ! "Player can send messages to Game"
 	  game ! _root_.game.Started(port)
   }
 
@@ -35,8 +37,12 @@ object RunPlayer extends Logging {
 		val playerPort = args(0).toInt
 		val gamePort = args(1).toInt
     val game = Actor.remote.actorFor("game", "localhost", gamePort)
-
+    game ! "HIHO " + playerPort
     val player = Actor.actorOf(new Player(playerPort, game))
-    player.start
+//  player.start
+
+    val playerServer = Actor.remote.start("localhost", playerPort)
+    playerServer.register("player", player)
+
   }
 }
