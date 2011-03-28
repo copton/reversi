@@ -1,0 +1,5 @@
+package gameserver
+
+class GameServer {
+
+}
