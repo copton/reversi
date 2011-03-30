@@ -1,7 +1,8 @@
 package tournament.plan
 
+import akka.actor.ActorRef
+import scala.collection.immutable.List
 import tournament.misc.GameResult
-import tournament.misc.GameDetails
 
 trait Plan {
 
@@ -13,9 +14,9 @@ trait Plan {
 	
 	/**
 	 * requests new games which should be run according to the tournement plan
-	 * returns a list of tuples containing a list of playerids and GameDetails. Additional information might be stored there.
+	 * returns a list of actor references of these games
 	 */
-	def requestGames: List[(List[String], GameDetails)]
+	def requestGames: List[ActorRef]
 
 	/**
 	 * Returns if the tournement is finished
