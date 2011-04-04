@@ -4,13 +4,29 @@ import akka.actor.{Actor, ActorRef}
 //import akka.remote
 import akka.util.Logging
 import scala.collection.mutable.HashMap
+import scala.collection.immutable.List
 import reversi.{Color, Position}
+import tournament.misc.DummyGameDetails
 
 
 class Player(val name: String, val port: Int, val color: Color) {
 	var actor: Option[ActorRef] = None
 	var proc: Option[PlayerProc] = None
   var ready = false
+}
+
+object GameFactory {
+	private def createPlayer(className: String, playerPort: Int, playerColor: Color): Player = {
+	
+		return new Player(className, playerPort, playerColor);
+	}
+
+	def createGame(neededPorts: List[Int], details: DummyGameDetails): ActorRef = {
+	
+//		val player1 = createPlayer(playerPorts(0), arguments(0));
+//		val player2 = createPlayer(playerPorts(1), arguments(1));
+//		Actor.actorOf(new Game(gamePort, player1, player2))
+	}
 }
 
 class Game(val gamePort: Int, val players: Array[Player]) extends Actor with Logging {
