@@ -21,11 +21,11 @@ object GameFactory {
 		return new Player(className, playerPort, playerColor);
 	}
 
-	def createGame(neededPorts: List[Int], details: DummyGameDetails): ActorRef = {
+	def createGame(gamePort: Int, playerPorts: List[Int], details: DummyGameDetails): ActorRef = {
 	
-//		val player1 = createPlayer(playerPorts(0), arguments(0));
-//		val player2 = createPlayer(playerPorts(1), arguments(1));
-//		Actor.actorOf(new Game(gamePort, player1, player2))
+		val player1 = createPlayer(details.players(0), playerPorts(0), details.additionalInformation(0) match {case c: Color => c}) //TODO add exception case
+		val player2 = createPlayer(details.players(0), playerPorts(0), details.additionalInformation(0) match {case c: Color => c})
+		Actor.actorOf(new Game(gamePort, Array(player1, player2)))
 	}
 }
 
