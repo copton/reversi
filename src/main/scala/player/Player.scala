@@ -37,7 +37,8 @@ object RunPlayer extends Logging {
 	def main(args: Array[String]) {
 		val playerPort = args(0).toInt
 		val gamePort = args(1).toInt
-    		val game = Actor.remote.actorFor("game"+gamePort, "localhost", gamePort)
+		val namingNumber = args(2)
+    		val game = Actor.remote.actorFor("game"+namingNumber, "localhost", gamePort)
     		val player = Actor.actorOf(new Player(playerPort, game))
 //  		player.start
 

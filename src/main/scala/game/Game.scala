@@ -12,21 +12,21 @@ import tournament.misc.GameResult
 import tournament.misc.DummyGameResult
 
 
-class Player(val name: String, val port: Int, val color: Color) {
+class Player(val name: String, val port: Int, val color: Color, val namingNumber: Int) {
 	var actor: Option[ActorRef] = None
 	var proc: Option[PlayerProc] = None
   var ready = false
 }
 
 object GameFactory {
-	private def createPlayer(className: String, playerPort: Int, playerColor: Color): Player = {
+	private def createPlayer(className: String, playerPort: Int, playerColor: Color, namingNumber: Int): Player = {
 	
-		return new Player(className, playerPort, playerColor);
+		return new Player(className, playerPort, playerColor, namingNumber);
 	}
 
-	def createGame(gamePort: Int, playerPorts: List[Int], details: GameDetails, tournament: ActorRef): ActorRef = {
-		val player1 = createPlayer(details.players(0), playerPorts(0), details  match {case d: DummyGameDetails => d.additionalInformation(0) match {case c: Color => c} }) //TODO add exception case
-		val player2 = createPlayer(details.players(1), playerPorts(1), details  match {case d: DummyGameDetails => d.additionalInformation(1) match {case c: Color => c} })
+	def createGame(gamePort: Int, playerPorts: List[Int], details: GameDetails, tournament: ActorRef, namingNumber: Int): ActorRef = {
+		val player1 = createPlayer(details.players(0), playerPorts(0), details  match {case d: DummyGameDetails => d.additionalInformation(0) match {case c: Color => c} }, namingNumber) //TODO add exception case
+		val player2 = createPlayer(details.players(1), playerPorts(1), details  match {case d: DummyGameDetails => d.additionalInformation(1) match {case c: Color => c} }, namingNumber)
 		Actor.actorOf(new Game(gamePort, Array(player1, player2), tournament))
 	}
 }

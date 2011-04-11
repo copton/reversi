@@ -15,6 +15,9 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 
 	var currentGames: List[GameDetails] = null
 	var testPort = 10400
+	var serverPort = 9999
+	var testServer = Actor.remote.start("localhost", serverPort)
+	var uniqueNumber = 1
 	log.info("Tournement started")
 
 
@@ -50,9 +53,7 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 			for(currentGame <- currentGames) {
 //				val gamePort = gameServer !! RequestPorts(1)
 //				val playerPorts = gameServer !! RequestPorts(2)
-				val gamePort = testPort
-				log.info("gamePort = " + testPort)
-				testPort = testPort + 1
+			
 				val playerPort1 = testPort
 				log.info("playerPort1 = " + testPort)
 				testPort = testPort + 1
@@ -60,9 +61,9 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 				log.info("playerPort2 = " + testPort)
 				testPort = testPort + 1
 				val playerPorts = List(playerPort1, playerPort2)
-				val game = GameFactory.createGame(gamePort, playerPorts, currentGame, self)
-				var testServer = Actor.remote.start("localhost", gamePort)
-    				testServer.register("game"+gamePort, game)
+				val game = GameFactory.createGame(serverPort, playerPorts, currentGame, self, uniqueNumber)
+    				testServer.register("game"+uniqueNumber, game)
+				uniqueNumber = uniqueNumber + 1
 //				game ! StartGame()
 
 

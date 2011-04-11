@@ -17,7 +17,8 @@ class PlayerProc(val player: Player, val game: ActorRef, gamePort: Int) extends 
                                 PlayerProc.cp,
                                 "player.RunPlayer",
                                 player.port.toString,
-                                gamePort.toString).start()
+                                gamePort.toString,
+				player.namingNumber.toString).start()
   val input = new StreamLogger("player" + player.port, proc.getInputStream(), log.info)
   val output = new StreamLogger("player" + player.port, proc.getErrorStream(), log.error)
 

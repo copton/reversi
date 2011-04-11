@@ -36,7 +36,7 @@ class DummyPlan extends Plan {
 	val gameDetails2 = new DummyGameDetails(players2, colors2)
 	
 	
-	return List(gameDetails1/*, gameDetails2*/)
+	return List(gameDetails1, gameDetails2)
     	
 	
 
