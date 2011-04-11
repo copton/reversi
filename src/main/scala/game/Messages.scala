@@ -1,5 +1,6 @@
 package game
 
+import akka.actor._
 import tournament.misc._
 
 sealed trait Message
@@ -7,10 +8,11 @@ sealed trait Message
 // from Tournement (to Game) ----> Propably in the constructor
 
 //case class StartGame(players: List[String], gameDetails: GameDetails) extends Message
+  case class StartGame() extends Message
 
 // from Game (to Tournement)
 
-case class GameFinished(result: GameResult) extends Message
+case class GameFinished(result: GameResult, game: ActorRef) extends Message
 case class SomethingWentWrong(error: GameError) extends Message
 
 // from Player

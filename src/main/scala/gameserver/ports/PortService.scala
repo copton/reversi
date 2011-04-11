@@ -1,15 +1,26 @@
 package gameserver.ports
 
-class PortService {
+import akka.actor._
+import tournament._
+import scala.collection.immutable.List
 
-	val tournamentPort: Int = 9999
-	val gamePort: Int = 10000
-	var basePlayerPort = 10001
+class PortService extends Actor{
 
-	def getPlayerPort: Int = {
-		val temp = basePlayerPort
-		basePlayerPort = basePlayerPort + 1
-		return temp	
+	var  basePort: Int = 1000
+	
+
+
+	def receive = {
+		case RequestPorts(amount: Int) =>
+			var portList: List[Int] = Nil
+			for (i <- 1 to amount){
+				basePort::portList
+				basePort = basePort + 1
+			}		
+			self.reply(portList)
+
+		case _ => println("unknown message received")
 	}
+
 
 }

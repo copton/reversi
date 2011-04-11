@@ -6,6 +6,7 @@ import akka.actor.Actor._
 //import akka.remote.{RemoteClient, RemoteNode, RemoteServer}
 import akka.util.Logging
 import java.net.InetSocketAddress
+import game._
 
 
 class Player(val port: Int, val game: ActorRef) extends Actor {
@@ -36,13 +37,12 @@ object RunPlayer extends Logging {
 	def main(args: Array[String]) {
 		val playerPort = args(0).toInt
 		val gamePort = args(1).toInt
-    val game = Actor.remote.actorFor("game", "localhost", gamePort)
-    game ! "HIHO " + playerPort
-    val player = Actor.actorOf(new Player(playerPort, game))
-//  player.start
+    		val game = Actor.remote.actorFor("game"+gamePort, "localhost", gamePort)
+    		val player = Actor.actorOf(new Player(playerPort, game))
+//  		player.start
 
-    val playerServer = Actor.remote.start("localhost", playerPort)
-    playerServer.register("player", player)
-
-  }
+    		val playerServer = Actor.remote.start("localhost", playerPort)
+    		playerServer.register("player", player)
+//  		game ! Started(playerPort)
+  	}
 }
