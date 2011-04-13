@@ -63,7 +63,8 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
       	if (redCount == greenCount) {log.info("draw game"); gameResult.winner = "draw game"}
       	else if (redCount > greenCount) {log.info("RED player wins with " + redCount + " to " + greenCount + "."); gameResult.winner = "red"}
       	else {log.info("GREEN player wins with " + greenCount + " to " + redCount + "."); gameResult.winner = "green"}
-	tournament ! GameFinished(gameResult, self)
+	var portsToReturn: List[Int] = players(0).port::players(1).port::Nil
+	tournament ! GameFinished(gameResult, self, portsToReturn)
     } else {
       	player.actor.get ! _root_.player.RequestNextMove(board, lastMove)
       	nextPlayer = (nextPlayer + 1) % players.size

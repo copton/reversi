@@ -34,16 +34,17 @@ class DummyPlan extends Plan {
 
 	val gameDetails1 = new DummyGameDetails(players1, colors1)
 	val gameDetails2 = new DummyGameDetails(players2, colors2)
+	val gameDetails3 = new DummyGameDetails(players2, colors2)
 	
 	
-	return List(gameDetails1, gameDetails2)
+	return List(gameDetails1, gameDetails2/*, gameDetails3*/)
     	
 	
 
   }
 
   def finished: Boolean = { 
-	if(count < 2){
+	if(count < 9){
 		count = count + 1
 		return false
 	} else {

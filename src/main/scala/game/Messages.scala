@@ -12,7 +12,7 @@ sealed trait Message
 
 // from Game (to Tournement)
 
-case class GameFinished(result: GameResult, game: ActorRef) extends Message
+case class GameFinished(result: GameResult, game: ActorRef, portsToRelease: List[Int]) extends Message
 case class SomethingWentWrong(error: GameError) extends Message
 
 // from Player
