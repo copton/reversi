@@ -19,7 +19,8 @@ class GameServer extends Actor{
 	def receive = {
 		case Start() =>
 			startTestTournament
-			log.info("GameServer: testTournament1 started")	
+			log.info("GameServer: testTournament1 started")
+
 
 
 		case RequestPorts(amount: Int) =>
@@ -38,7 +39,7 @@ class GameServer extends Actor{
   		val plan = new DummyPlan
     		val tournament = Actor.actorOf(new Tournament(plan, self))
 		tournament.start
-		tournament ! Start()
+		tournament ! _root_.tournament.Start()
 
 	}
 

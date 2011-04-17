@@ -5,7 +5,7 @@ import scala.collection.immutable.List
 import tournament.misc.GameResult
 import tournament.misc.DummyGameResult
 import tournament.misc.GameDetails
-import tournament.misc.DummyGameDetails
+import tournament.misc.DummyGameOption
 import game._
 import reversi.{Color, Position}
 
@@ -28,23 +28,29 @@ class DummyPlan extends Plan {
 
 	val players1 = List(player, player)
 	val players2 = List(player, player)
+	val players3 = List(player, player)
 
 	val colors1 = List(red, green)
 	val colors2 = List(red, green)
+	val colors3 = List(red, green)
 
-	val gameDetails1 = new DummyGameDetails(players1, colors1)
-	val gameDetails2 = new DummyGameDetails(players2, colors2)
-	val gameDetails3 = new DummyGameDetails(players2, colors2)
+	val option1 = new DummyGameOption(colors1)
+	val option2 = new DummyGameOption(colors2)
+	val option3 = new DummyGameOption(colors3)
+
+	val gameDetails1 = new GameDetails(players1, List(option1))
+	val gameDetails2 = new GameDetails(players2, List(option2))
+	val gameDetails3 = new GameDetails(players3, List(option3))
 	
 	
-	return List(gameDetails1, gameDetails2/*, gameDetails3*/)
+	return List(gameDetails1/*, gameDetails2, gameDetails3*/)
     	
 	
 
   }
 
   def finished: Boolean = { 
-	if(count < 9){
+	if(count < 1){
 		count = count + 1
 		return false
 	} else {

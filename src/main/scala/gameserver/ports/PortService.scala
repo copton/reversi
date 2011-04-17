@@ -2,8 +2,8 @@ package gameserver.ports
 
 import akka.actor._
 import java.util.Stack
-import tournament._
 import scala.collection.immutable.List
+import gameserver._
 
 class PortService(var basePort: Int) extends Actor{
 
@@ -21,7 +21,8 @@ class PortService(var basePort: Int) extends Actor{
 					portList = freePorts.pop()::portList
 				}
 				
-			}		
+			}
+			println("PortService: giving out following ports: " + portList)		
 			self.reply(portList)
 
 		case ReleasePorts(portList: List[Int]) =>

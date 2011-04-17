@@ -17,6 +17,10 @@ class MainProject(info: ProjectInfo) extends DefaultProject(info) with AkkaProje
   val specs = "org.scala-tools.testing"  % "specs_2.8.0"  % "1.6.6-SNAPSHOT"  % "test"
   val scalatest = "org.scalatest" % "scalatest" % "1.2" % "test"
 
+  override def compileOptions = super.compileOptions++compileOptions("-unchecked")
+	
+  
+
   // Akka
   val akkaRemote = akkaModule("remote")
   /** 

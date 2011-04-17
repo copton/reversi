@@ -31,7 +31,14 @@ class PlayerProc(val player: Player, val game: ActorRef, gamePort: Int) extends 
     output.join()
     val exitCode = proc.waitFor() 
     game ! PlayerExit(player, exitCode)
+    println("PlayerProc: end of run() reached")
   }
+	
+  def destroyProc() {
+	proc.destroy()
+	println("PlayerProc: proc destroyed!")
+  }
+
 }
 
 object PlayerProc {

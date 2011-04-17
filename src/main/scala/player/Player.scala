@@ -30,6 +30,9 @@ class Player(val port: Int, val game: ActorRef) extends Actor {
     case RequestNextMove(board, lastMove) =>
       val position = proxy.get.nextMove(board, lastMove)
       game ! _root_.game.ReportNextMove(port, position)
+
+    case Kill() =>
+	self.stop
   }
 }
 

@@ -1,10 +1,6 @@
 package tournament.misc
 
-trait GameDetails {
+trait GameOption
 
-	var players: List[String]
 
-	var additionalInformation: List[Any]
-
-}
-
+class GameDetails(val players: List[String], val options: List[GameOption])

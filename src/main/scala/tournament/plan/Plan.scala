@@ -15,12 +15,16 @@ trait Plan {
 	
 	/**
 	 * requests new games which should be run according to the tournement plan
-	 * returns a list of GameDetails.
+	 * 
+	 * returns the class GameDetails which contains all needed information
+	 * 
+	 *
+	 * 
 	 */
 	def requestGames: List[GameDetails]
 
 	/**
-	 * Returns if the tournement is finished
+	 * Returns true if the tournement is finished
 	 */	
 	def finished: Boolean
 
