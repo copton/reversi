@@ -12,6 +12,7 @@ import tournament.misc.GameResult
 import tournament.misc.DummyGameResult
 import tournament.misc.DummyGameOption
 import player._
+import java.net.InetSocketAddress
 
 
 class Player(val name: String, val port: Int, val color: Color, val namingNumber: Int) {
@@ -60,9 +61,21 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
 			val gameResult = new DummyGameResult
 		      	if (redCount == greenCount) {log.info("draw game"); gameResult.winner = "draw game"}
 		      	else if (redCount > greenCount) {log.info("RED player wins with " + redCount + " to " + greenCount + "."); gameResult.winner = "red"}
+
+
 		      	else {log.info("GREEN player wins with " + greenCount + " to " + redCount + "."); gameResult.winner = "green"}
 			var portsToReturn: List[Int] = players(0).port::players(1).port::Nil
-			tournament ! GameFinished(gameResult, self, portsToReturn, players(0).namingNumber)
+	 		for (player <- players) {
+				player.actor.get ! _root_.player.KillPlayer()
+	      			log.info("Game: I sended a KillPlayer() Message to " + "Player " + player.name + " The port is " + player.port)
+				Thread.sleep(2000)
+				Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", player.port))
+//				player.proc.get.destroyProc()
+				
+				
+	    		}
+
+			tournament ! GameFinished(gameResult, self, portsToReturn, 1/*players(0).namingNumber*/)
 		} else {
 		      	player.actor.get ! _root_.player.RequestNextMove(board, lastMove)
 		      	nextPlayer = (nextPlayer + 1) % players.size
@@ -75,14 +88,32 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
       		playerOpt.get
 	}
 
+	var stopCounter = 0	
+
   	def receive = {
+
+		case Stopped() =>
+			stopCounter = stopCounter + 1
+			if (stopCounter == 2) {
+				for (player <- players) {
+	      				player.proc.get.destroyProc()
+	      				log.info("Game: " + "Player " + player.name + " Proc destruction done")
+	    			}
+				log.info("Game: procs destroyed, now stopping myself")
+//				self.stop
+			}
+			
+
 		case KillAll() =>
 			log.info("Game: KillAll() received")
+			var num = 0
 	 		for (player <- players) {
-				player.actor.get ! _root_.player.Kill()
-	      			player.proc.get.destroyProc()
-	      			log.info("PostStop-Message from the Game: " + "Player " + player.name + " stopped The port is was " + player.port)
-//				self.stop
+				if(num < 1){
+				println(num)
+				player.actor.get ! _root_.player.KillPlayer()
+	      			log.info("Game: I sended a KillPlayer() Message to " + "Player " + player.name + " The port is was " + player.port)
+				num = num + 1
+				}
 	    		}
 			
 

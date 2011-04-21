@@ -9,7 +9,7 @@ import java.net.InetSocketAddress
 import game._
 
 
-class Player(val port: Int, val game: ActorRef) extends Actor {
+class Player(val port: Int, val game: ActorRef, val gamePort: Int) extends Actor {
   var proxy: Option[Proxy] = None
 
   //self.homeAddress = ("localhost", port)
@@ -17,6 +17,11 @@ class Player(val port: Int, val game: ActorRef) extends Actor {
   override def preStart() {
 	  game ! "Player can send messages to Game"
 	  game ! _root_.game.Started(port)
+  }
+
+  override def postStop() {
+	
+
   }
 
   def receive = {
@@ -31,8 +36,17 @@ class Player(val port: Int, val game: ActorRef) extends Actor {
       val position = proxy.get.nextMove(board, lastMove)
       game ! _root_.game.ReportNextMove(port, position)
 
-    case Kill() =>
-	self.stop
+    case KillPlayer() =>
+	log.info("player: KillPlayer() received. Stopping myself")
+//	game ! _root_.game.Stopped()
+	println("asdf")
+//	Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", gamePort))
+//	Actor.remote.shutdown
+//	Actor.registry.shutdownAll
+
+	println("asdf2")
+	exit
+//	self.stop
   }
 }
 
@@ -42,7 +56,7 @@ object RunPlayer extends Logging {
 		val gamePort = args(1).toInt
 		val namingNumber = args(2)
     		val game = Actor.remote.actorFor("game"+namingNumber, "localhost", gamePort)
-    		val player = Actor.actorOf(new Player(playerPort, game))
+    		val player = Actor.actorOf(new Player(playerPort, game, gamePort))
 //  		player.start
 
     		val playerServer = Actor.remote.start("localhost", playerPort)

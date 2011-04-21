@@ -39,9 +39,8 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 			gamesFinished = gamesFinished + 1
 			log.info("Tournament: we already finished " + gamesFinished + "games")
 			plan.deliverResult(result)
-//			finishedGame.stop
-			finishedGame ! KillAll()
-			testServer.unregister("game"+namingNumber)
+//			finishedGame ! KillAll()
+//			testServer.unregister("game"+namingNumber)
 
 //			gameServer ! ReleasePorts(portsToReturn)
 			requestAndStartGames
@@ -54,6 +53,7 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 	def requestAndStartGames: Unit = {
 		if (plan.finished) {
 			log.info("Tournament: keine games mehr -> Später wird das dem GameServer weitergeleitet")
+			
 		} else {
 			currentGames = plan.requestGames
 			if(!currentGames.isEmpty){

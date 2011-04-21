@@ -9,33 +9,39 @@ trait Plan {
 
 	/**
 	 * delivers the result of a finished game to the plan.
-	 */	
+	 **/	
 	def deliverResult(result: GameResult): Unit
 
 	
 	/**
-	 * requests new games which should be run according to the tournement plan
+	 * requests new games which should be run according to the tournament plan
 	 * 
-	 * returns the class GameDetails which contains all needed information
-	 * 
-	 *
-	 * 
-	 */
+	 * returns needed details for every game, so that an according game can be created
+	 * List may be empty if there are no games to be run right now. (i.e. other games needs to be finished before a new tier of games is available)
+	 **/
 	def requestGames: List[GameDetails]
 
 	/**
-	 * Returns true if the tournement is finished
-	 */	
+	 * Returns true if the tournament is finished
+	 **/	
 	def finished: Boolean
 
 
 	/**
-	 * returns the structure an status of the tournement. Mainly to answer the 'GET /reversi/tournement/' request.
+	 * returns information about this tournament. Mainly to answer the 'GET /reversi/tournement/' request.
 	 * 
-	 */	
-	def getTournementInfo: TournementInfo
-		
-	
+	 **/	
+	def getTournamentInfo: TournamentInfo
+
+	/**
+	 * returns information about a particular game. 
+	 * 
+	 **/	
+	def getGameInfo(gameId: String): GameInfo
 	
 
 }
+
+trait GameInfo
+trait TournamentInfo
+trait TurnInfo
