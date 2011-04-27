@@ -48,7 +48,7 @@ class DummyPlan extends Plan {
 	}
 
 	def finished: Boolean = { 
-		if(count < 10){
+		if(count < 4){
 			count = count + 1
 			return false
 		} else {

@@ -20,7 +20,7 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 	var serverPort: List[Int] = null
 	var testServer: akka.remoteinterface.RemoteServerModule = null
 	var uniqueNumber = 1
-	log.info("Tournement started")
+	log.info("Tournament started")
 
 
 	
@@ -39,10 +39,10 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 			gamesFinished = gamesFinished + 1
 			log.info("Tournament: we already finished " + gamesFinished + "games")
 			plan.deliverResult(result)
-//			finishedGame ! KillAll()
-//			testServer.unregister("game"+namingNumber)
 
-//			gameServer ! ReleasePorts(portsToReturn)
+			finishedGame.stop
+			testServer.unregister("game"+namingNumber)
+			gameServer ! ReleasePorts(portsToReturn)
 			requestAndStartGames
 			
 		

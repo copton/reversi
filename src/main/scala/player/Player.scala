@@ -37,16 +37,9 @@ class Player(val port: Int, val game: ActorRef, val gamePort: Int) extends Actor
       game ! _root_.game.ReportNextMove(port, position)
 
     case KillPlayer() =>
-	log.info("player: KillPlayer() received. Stopping myself")
-//	game ! _root_.game.Stopped()
-	println("asdf")
-//	Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", gamePort))
-//	Actor.remote.shutdown
-//	Actor.registry.shutdownAll
-
-	println("asdf2")
+	log.info("player: KillPlayer() received. calling exit")
 	exit
-//	self.stop
+
   }
 }
 
