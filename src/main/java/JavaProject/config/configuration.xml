@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Reversi>
+	<resourceName>reversi</resourceName>
+	<resourceURI>/reversi</resourceURI>
+	<methods>GET</methods>
+	<collectionMethod/>
+	<resourceDescription/>
+	<children/>
+	<getters>
+		<getter>
+			<getterName>tournamentGetter</getterName>
+			<getterMethod>getTournaments</getterMethod>
+			<getterOnChangeMethod/>
+			<getterDescription/>
+		</getter>
+	</getters>
+	<posters/>
+	<putters/>
+	<deleters/>
+	<security>
+		<inheritUsers>true</inheritUsers>
+	</security>
+</Reversi>

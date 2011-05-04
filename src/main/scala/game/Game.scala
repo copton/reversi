@@ -60,9 +60,10 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
     			val redCount = board.countStones(Color.RED)
 		     	val greenCount = board.countStones(Color.GREEN)
 			val gameResult = new DummyGameResult
+			gameResult.board = board.toString()
 		      	if (redCount == greenCount) {log.info("draw game"); gameResult.winner = "draw game"}
 		      	else if (redCount > greenCount) {log.info("RED player wins with " + redCount + " to " + greenCount + "."); gameResult.winner = "red"}
-		      	else {log.info("GREEN player wins with " + greenCount + " to " + redCount + "."); gameResult.winner = "green"}
+		      	else {log.info("GREEN player wins with " + greenCount + " to " + redCount + "."); gameResult.winner = "green"}			
 
 			//cleanup, destroying connections, ...
 			var portsToReturn: List[Int] = players(0).port::players(1).port::Nil

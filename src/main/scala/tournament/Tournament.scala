@@ -75,7 +75,17 @@ class Tournament(val plan: Plan, val gameServer: ActorRef) extends Actor {
 		}//end else
 	}//end def	
 
-	
+/////////////////////// Rest Connection Stuff
+
+	def getGames: Unit = {
+
+	}
+
+	def getGame(gameIdentifier: String): Unit = {
+
+	}
+
+/////////////////////////////////////	
 }
 
 

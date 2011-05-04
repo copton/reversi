@@ -16,7 +16,10 @@ class DummyPlan extends Plan {
 	var count: Int = 0
 
 	def deliverResult(result: GameResult): Unit = {
-		result match { case d: DummyGameResult => println("DummyGamePlan: the Winner is: " + d.winner) }
+		result match { case d: DummyGameResult => 
+			println("DummyGamePlan: the Winner is: " + d.winner)
+			println(d.board)
+		}
 	
 	}
 
@@ -49,7 +52,7 @@ class DummyPlan extends Plan {
 	}
 
 	def finished: Boolean = { 
-		if(count < 3){
+		if(count < 2){
 			count = count + 1
 			return false
 		} else {

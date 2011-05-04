@@ -11,6 +11,8 @@ sealed trait Message
 //tournament
 	//from server
 	case class Start() extends Message
+	case class GetGames()
+	case class GetGame(gameIdentifier: String)
 
 	//from game
 	case class GameFinished(result: GameResult, game: ActorRef, portsToRelease: List[Int], namingNumber: Int) extends Message
@@ -36,6 +38,10 @@ sealed trait Message
 
 	//from starting mechanism
 	case class ServerStart() extends Message
+
+	//from webserver
+	case class WebTest() extends Message
+
 
 
 //portservice

@@ -34,8 +34,8 @@ class GameServer extends Actor{
 //			log.info("gameServer: fakeTournament2 started for testing purposes.")
 //			startFakeTournament(5555)
 //			log.info("gameServer: fakeTournament2 started for testing purposes.")
-			startTestTournament
-			log.info("GameServer: testTournament1 started")
+//			startTestTournament
+//			log.info("GameServer: testTournament1 started")
 
 
 
@@ -47,7 +47,13 @@ class GameServer extends Actor{
 			log.info("got ports to release. forwarding...")
 			portService.forward(ReleasePorts(portList: List[Int]))
 	
-		case _ => println("unknown message received") 
+		case WebTest() =>
+			self.reply("Webtest seems to work")
+
+		case _ => 
+			println("unknown message received")
+			val reply: String = "<a href='http://akka.io'>Akka Actors rock!</a>"
+			self.reply(reply)
 			
 	}
 
@@ -72,6 +78,22 @@ class GameServer extends Actor{
 
 ////////////////////// REST Connection Stuff //////////////////
 
+	def getTournaments: Unit = {
+
+	}
+
+	def getTournament(tournamentIdentifier: String): Unit = {
+
+	}
+
+	def getGames(tournamentIdentifier: String): Unit = {
+		
+	}
+
+	def getGame(tournamentIdentifier: String, gameIdentifier: String): Unit = {
+
+	}
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -88,8 +110,13 @@ object RunGameServer {
 
 		val gamePort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("RunGameServer: TIMEOUT"))
 		println("to test the portservice: the port I requested is: " + (gamePort match {case l: List[Int] => l(0) }).toString  )
-
+		
+		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
+		webServer.myServerStarter(gameServer)
 	}
+}
 
 
-} 
+
+
+ 
