@@ -8,9 +8,10 @@ import gameserver._
 import tournament.plan.{DummyPlan, Plan}
 import tournament.misc.{GameDetails, GameResult}
 import reversi.Color
+import messages._
 
 
-class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
+class Tournament(val plan: Plan, val gameServer: ActorRef) extends Actor {
 	
 	var i = 0
 
@@ -20,7 +21,7 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 	var serverPort: List[Int] = null
 	var testServer: akka.remoteinterface.RemoteServerModule = null
 	var uniqueNumber = 1
-	log.info("Tournament started")
+	log.info("Tournament: Tournament started")
 
 
 	
@@ -30,8 +31,9 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 
 		case Start() => 
 			log.info("received a Start-message")
-			serverPort = (gameServer !! RequestPorts(1)).getOrElse(throw new RuntimeException("Tournament: TIMEOUT")).asInstanceOf[List[Int]]
-			testServer = Actor.remote.start("localhost", (serverPort.asInstanceOf[List[Int]])(0))
+			serverPort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("Tournament: TIMEOUT")).asInstanceOf[List[Int]]
+			testServer = Actor.remote.start("localhost", serverPort(0))
+			log.info("Tournament: created a remoteServerModule with the port " + serverPort(0))
 			requestAndStartGames			
 	
 		
@@ -40,9 +42,9 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 			log.info("Tournament: we already finished " + gamesFinished + "games")
 			plan.deliverResult(result)
 
-			finishedGame.stop
-			testServer.unregister("game"+namingNumber)
-			gameServer ! ReleasePorts(portsToReturn)
+//			finishedGame.stop
+//			testServer.unregister("game"+namingNumber)
+//			gameServer ! _root_.messages.ReleasePorts(portsToReturn)
 			requestAndStartGames
 			
 		
@@ -59,13 +61,13 @@ class Tournament(plan: Plan, gameServer: ActorRef) extends Actor {
 			if(!currentGames.isEmpty){
 
 				for(currentGame <- currentGames) {
-					val playerPorts = (gameServer !! RequestPorts(2)).getOrElse(throw new RuntimeException("TIMEOUT"))
+					val playerPorts = (gameServer !! _root_.messages.RequestPorts(2)).getOrElse(throw new RuntimeException("TIMEOUT"))
 					log.info("Tournament: the playerPorts are: " + (playerPorts.asInstanceOf[List[Int]])(0) + " and " + (playerPorts.asInstanceOf[List[Int]])(1))
 				
-					val game = GameFactory.createGame((serverPort.asInstanceOf[List[Int]])(0), playerPorts.asInstanceOf[List[Int]], currentGame, self, uniqueNumber)
+					val game = GameFactory.createGame(serverPort(0), playerPorts.asInstanceOf[List[Int]], currentGame, self, uniqueNumber)
 	  				testServer.register("game"+uniqueNumber, game)
 					uniqueNumber = uniqueNumber + 1
-					game ! StartGame()
+					game ! _root_.messages.StartGame()
 
 
 				}//end for

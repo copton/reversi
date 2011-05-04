@@ -13,6 +13,7 @@ import tournament.misc.DummyGameResult
 import tournament.misc.DummyGameOption
 import player._
 import java.net.InetSocketAddress
+import messages._
 
 
 class Player(val name: String, val port: Int, val color: Color, val namingNumber: Int) {
@@ -66,15 +67,15 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
 			//cleanup, destroying connections, ...
 			var portsToReturn: List[Int] = players(0).port::players(1).port::Nil
 	 		for (player <- players) {
-				player.actor.get ! _root_.player.KillPlayer()
+				player.actor.get ! _root_.messages.KillPlayer()
 	      			log.info("Game: I sended a KillPlayer() Message to " + "Player " + player.name + " The port is " + player.port)
-				Thread.sleep(500)
+//				Thread.sleep(500)
 				Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", player.port))	
 	    		}
 
-			tournament ! GameFinished(gameResult, self, portsToReturn, players(0).namingNumber)
+			tournament ! _root_.messages.GameFinished(gameResult, self, portsToReturn, players(0).namingNumber)
 		} else {
-		      	player.actor.get ! _root_.player.RequestNextMove(board, lastMove)
+		      	player.actor.get ! _root_.messages.RequestNextMove(board, lastMove)
 		      	nextPlayer = (nextPlayer + 1) % players.size
 		}
 	}
@@ -93,14 +94,14 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
 			for (player <- players) {
 				log.info("Game: StartGame() received")
       				player.proc = Some(new PlayerProc(player, self, gamePort))
-      				log.info("Player " + player.name + " started! The port is " + player.port)
+      				log.info("Player " + player.name + "-proc started! The port is " + player.port)
     			}
 
   		case Started(port) =>
         		val player = getPlayer(port)
       			log.info("Player " + player.name + " (" + port + ") started")
       			player.actor = Some(self.sender.get)
-      			player.actor.get ! _root_.player.LoadPlayer(player.name, player.color)
+      			player.actor.get ! _root_.messages.LoadPlayer(player.name, player.color)
     
 
   		case PlayerReady(port) =>

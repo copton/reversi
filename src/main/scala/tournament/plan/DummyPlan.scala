@@ -8,6 +8,7 @@ import tournament.misc.GameDetails
 import tournament.misc.DummyGameOption
 import game._
 import reversi.{Color, Position}
+import messages._
 
 
 class DummyPlan extends Plan {
@@ -43,12 +44,12 @@ class DummyPlan extends Plan {
 		val gameDetails3 = new GameDetails(players3, List(option3))
 		
 		
-		return List(gameDetails1, gameDetails2/*, gameDetails3*/)
+		return List(gameDetails1/*, gameDetails2, gameDetails3*/)
     	
 	}
 
 	def finished: Boolean = { 
-		if(count < 4){
+		if(count < 3){
 			count = count + 1
 			return false
 		} else {

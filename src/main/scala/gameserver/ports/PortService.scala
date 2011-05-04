@@ -4,10 +4,14 @@ import akka.actor._
 import java.util.Stack
 import scala.collection.immutable.List
 import gameserver._
+import messages._
 
 class PortService(var basePort: Int) extends Actor{
 
 	val freePorts: Stack[Int] = new Stack()
+
+	var tournamentNameCounter: Int = 1
+	var gameNameCounter: Int = 1		
 
 
 	def receive = {
@@ -29,6 +33,15 @@ class PortService(var basePort: Int) extends Actor{
 			for(port <- portList) {
 				freePorts.push(port)
 			}
+
+		case RequestTournamentName() =>
+			self.reply("tournament"+tournamentNameCounter)
+			tournamentNameCounter = tournamentNameCounter + 1
+
+		case RequestGameName() =>
+			self.reply("game"+gameNameCounter)
+			gameNameCounter = gameNameCounter + 1
+
 
 		case _ => println("PortService: unknown message received")
 	}

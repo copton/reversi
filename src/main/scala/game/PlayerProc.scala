@@ -6,6 +6,7 @@ import java.io.{InputStream, BufferedReader, InputStreamReader}
 import akka.actor.ActorRef
 import scala.util.Properties
 import scala.io.Source
+import messages._
 
 class StreamLogger(prefix: String, in: InputStream, logf: ((=>String) => Unit)) extends Thread {
   override def run() = Source.fromInputStream(in).getLines.foreach(line => logf("%s: %s".format(prefix, line)))
@@ -30,7 +31,7 @@ class PlayerProc(val player: Player, val game: ActorRef, gamePort: Int) extends 
     input.join()
     output.join()
     val exitCode = proc.waitFor() 
-    game ! PlayerExit(player, exitCode)
+    game ! _root_.messages.PlayerExit(player, exitCode)
     println("PlayerProc: end of run() reached")
   }
 	
