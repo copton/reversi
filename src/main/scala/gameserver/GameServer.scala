@@ -9,33 +9,30 @@ import messages._
 
 class GameServer extends Actor{
 	var portService: ActorRef = null
-	
 	var tournaments: HashMap[String, ActorRef] = new HashMap
-
-	var testServer, testServer2: akka.remoteinterface.RemoteServerModule = null
+	var remoteNode: akka.remoteinterface.RemoteServerModule = null
+	val remoteNodePort: Int = 9999
 
 	override def preStart() {
 		portService = Actor.actorOf(new PortService(10000))
 		portService.start
 		log.info("GameServer: portService started")
-//		testServer = Actor.remote.start("localhost", 9999)
-//		testServer2 = Actor.remote.start("localhost", 8888)
+		remoteNode = Actor.remote.start("localhost", remoteNodePort)
 		
 	}
 
 
 	def receive = {
 		case ServerStart() =>
-//			startFakeTournament(8888)
-//			log.info("gameServer: fakeTournament started for testing purposes.")
-//			startFakeTournament(9999, testServer, "fakeTournament1")
+//			startFakeTournament(remoteNodePort, remoteNode, "fakeTournament1")
 //			log.info("gameServer: fakeTournament2 started for testing purposes.")
-//			startFakeTournament(9999, testServer, "fakeTournament2")
+//			startFakeTournament(remoteNodePort, remoteNode, "fakeTournament2")
 //			log.info("gameServer: fakeTournament2 started for testing purposes.")
-//			startFakeTournament(5555)
-//			log.info("gameServer: fakeTournament2 started for testing purposes.")
-//			startTestTournament
-//			log.info("GameServer: testTournament1 started")
+
+			startTestTournament(remoteNode)
+			log.info("GameServer: testTournament1 started")
+			startTestTournament(remoteNode)
+			log.info("GameServer: testTournament2 started")
 
 
 
@@ -46,6 +43,10 @@ class GameServer extends Actor{
 		case ReleasePorts(portList: List[Int]) =>
 			log.info("got ports to release. forwarding...")
 			portService.forward(ReleasePorts(portList: List[Int]))
+
+		case RequestTag() =>
+			log.info("got a tag request. forwarding...")
+			portService.forward(RequestTag())
 	
 		case WebTest() =>
 			self.reply("Webtest seems to work")
@@ -57,9 +58,9 @@ class GameServer extends Actor{
 			
 	}
 
-	def startTestTournament: Unit = {
+	def startTestTournament(remoteNode: akka.remoteinterface.RemoteServerModule): Unit = {
   		val plan = new DummyPlan
-    		val tournament = Actor.actorOf(new Tournament(plan, self))
+    		val tournament = Actor.actorOf(new Tournament(plan, self, remoteNode))
 		val tournamentName = (portService !! _root_.messages.RequestTournamentName()).getOrElse(throw new RuntimeException("TIMEOUT")).asInstanceOf[String]
 		log.info("GameServer: created a new tournament with the name " + tournamentName)
 		tournaments += tournamentName.asInstanceOf[String] -> tournament
@@ -106,13 +107,14 @@ object RunGameServer {
 
 		val gameServer = Actor.actorOf(new GameServer)
 		gameServer.start
-		gameServer ! _root_.messages.ServerStart()
 
 		val gamePort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("RunGameServer: TIMEOUT"))
 		println("to test the portservice: the port I requested is: " + (gamePort match {case l: List[Int] => l(0) }).toString  )
 		
-		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
-		webServer.myServerStarter(gameServer)
+//		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
+//		webServer.myServerStarter(gameServer)
+
+		gameServer ! _root_.messages.ServerStart()
 	}
 }
 

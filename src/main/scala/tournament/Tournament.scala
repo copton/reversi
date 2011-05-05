@@ -11,16 +11,13 @@ import reversi.Color
 import messages._
 
 
-class Tournament(val plan: Plan, val gameServer: ActorRef) extends Actor {
+class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remoteinterface.RemoteServerModule) extends Actor {
 	
 	var i = 0
 
 	var gamesFinished = 0
 
 	var currentGames: List[GameDetails] = null
-	var serverPort: List[Int] = null
-	var testServer: akka.remoteinterface.RemoteServerModule = null
-	var uniqueNumber = 1
 	log.info("Tournament: Tournament started")
 
 
@@ -31,20 +28,16 @@ class Tournament(val plan: Plan, val gameServer: ActorRef) extends Actor {
 
 		case Start() => 
 			log.info("received a Start-message")
-			serverPort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("Tournament: TIMEOUT")).asInstanceOf[List[Int]]
-			testServer = Actor.remote.start("localhost", serverPort(0))
-			log.info("Tournament: created a remoteServerModule with the port " + serverPort(0))
 			requestAndStartGames			
 	
 		
-		case GameFinished(result: GameResult, finishedGame: ActorRef, portsToReturn: List[Int], namingNumber: Int) => 
+		case GameFinished(result: GameResult, finishedGame: ActorRef, portsToReturn: List[Int], uniqueTag: Int) => 
 			gamesFinished = gamesFinished + 1
 			log.info("Tournament: we already finished " + gamesFinished + "games")
 			plan.deliverResult(result)
 
-//			finishedGame.stop
-//			testServer.unregister("game"+namingNumber)
-//			gameServer ! _root_.messages.ReleasePorts(portsToReturn)
+			remoteNode.unregister(uniqueTag.toString()) //Todo: tag stimmt wohl nicht
+			gameServer ! _root_.messages.ReleasePorts(portsToReturn)
 			requestAndStartGames
 			
 		
@@ -61,12 +54,14 @@ class Tournament(val plan: Plan, val gameServer: ActorRef) extends Actor {
 			if(!currentGames.isEmpty){
 
 				for(currentGame <- currentGames) {
+					log.info("Tournament: creating a new game:")
 					val playerPorts = (gameServer !! _root_.messages.RequestPorts(2)).getOrElse(throw new RuntimeException("TIMEOUT"))
 					log.info("Tournament: the playerPorts are: " + (playerPorts.asInstanceOf[List[Int]])(0) + " and " + (playerPorts.asInstanceOf[List[Int]])(1))
+					val uniqueTag = (gameServer !! RequestTag()).getOrElse(throw new RuntimeException("TIMEOUT"))
+					log.info("Tournament: the tag for this game is: " + uniqueTag.toString())
 				
-					val game = GameFactory.createGame(serverPort(0), playerPorts.asInstanceOf[List[Int]], currentGame, self, uniqueNumber)
-	  				testServer.register("game"+uniqueNumber, game)
-					uniqueNumber = uniqueNumber + 1
+					val game = GameFactory.createGame(playerPorts.asInstanceOf[List[Int]], currentGame, self, uniqueTag.asInstanceOf[Int])
+	  				remoteNode.register(uniqueTag.toString(), game)
 					game ! _root_.messages.StartGame()
 
 

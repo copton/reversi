@@ -16,22 +16,26 @@ import java.net.InetSocketAddress
 import messages._
 
 
-class Player(val name: String, val port: Int, val color: Color, val namingNumber: Int) {
+class Player(val name: String, val port: Int, val color: Color, val uniqueTag: Int) {
 	var actor: Option[ActorRef] = None
 	var proc: Option[PlayerProc] = None
   	var ready = false
 }
 
-object GameFactory {
-	private def createPlayer(className: String, playerPort: Int, playerColor: Color, namingNumber: Int): Player = {
+trait gameCreation {
+	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: Int): ActorRef
+}
+
+object GameFactory extends gameCreation {
+	private def createPlayer(className: String, playerPort: Int, playerColor: Color, uniqueTag: Int): Player = {
 	
-		return new Player(className, playerPort, playerColor, namingNumber);
+		return new Player(className, playerPort, playerColor, uniqueTag);
 	}
 
-	def createGame(gamePort: Int, playerPorts: List[Int], details: GameDetails, tournament: ActorRef, namingNumber: Int): ActorRef = {
-		val player1 = createPlayer(details.players(0), playerPorts(0), details.options(0).asInstanceOf[DummyGameOption].colors(0), namingNumber) //TODO add exception case
-		val player2 = createPlayer(details.players(1), playerPorts(1), details.options(0).asInstanceOf[DummyGameOption].colors(1), namingNumber)
-		Actor.actorOf(new Game(gamePort, Array(player1, player2), tournament))
+	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: Int): ActorRef = {
+		val player1 = createPlayer(details.players(0), playerPorts(0), details.options(0).asInstanceOf[DummyGameOption].colors(0), uniqueTag) //TODO add exception case
+		val player2 = createPlayer(details.players(1), playerPorts(1), details.options(0).asInstanceOf[DummyGameOption].colors(1), uniqueTag)
+		Actor.actorOf(new Game(9999, Array(player1, player2), tournament))
 	}
 }
 
@@ -70,11 +74,10 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
 	 		for (player <- players) {
 				player.actor.get ! _root_.messages.KillPlayer()
 	      			log.info("Game: I sended a KillPlayer() Message to " + "Player " + player.name + " The port is " + player.port)
-//				Thread.sleep(500)
 				Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", player.port))	
 	    		}
 
-			tournament ! _root_.messages.GameFinished(gameResult, self, portsToReturn, players(0).namingNumber)
+			tournament ! _root_.messages.GameFinished(gameResult, self, portsToReturn, players(0).uniqueTag)
 		} else {
 		      	player.actor.get ! _root_.messages.RequestNextMove(board, lastMove)
 		      	nextPlayer = (nextPlayer + 1) % players.size

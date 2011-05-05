@@ -47,7 +47,7 @@ sealed trait Message
 //portservice
 	//from requester
 	case class RequestTournamentName() extends Message
-	case class RequestGameName() extends Message
+	case class RequestTag() extends Message
 
 
 //game

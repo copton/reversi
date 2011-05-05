@@ -11,7 +11,7 @@ class PortService(var basePort: Int) extends Actor{
 	val freePorts: Stack[Int] = new Stack()
 
 	var tournamentNameCounter: Int = 1
-	var gameNameCounter: Int = 1		
+	var tagCounter: Int = 1		
 
 
 	def receive = {
@@ -38,9 +38,9 @@ class PortService(var basePort: Int) extends Actor{
 			self.reply("tournament"+tournamentNameCounter)
 			tournamentNameCounter = tournamentNameCounter + 1
 
-		case RequestGameName() =>
-			self.reply("game"+gameNameCounter)
-			gameNameCounter = gameNameCounter + 1
+		case RequestTag() =>
+			self.reply(tagCounter)
+			tagCounter = tagCounter + 1
 
 
 		case _ => println("PortService: unknown message received")
