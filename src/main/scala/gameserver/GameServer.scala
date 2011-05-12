@@ -9,7 +9,7 @@ import messages._
 
 class GameServer extends Actor{
 	var portService: ActorRef = null
-	var tournaments: HashMap[String, ActorRef] = new HashMap
+	var tournaments: HashMap[String, (ActorRef, Boolean)] = new HashMap
 	var remoteNode: akka.remoteinterface.RemoteServerModule = null
 	val remoteNodePort: Int = 9999
 
@@ -51,6 +51,19 @@ class GameServer extends Actor{
 		case WebTest() =>
 			self.reply("Webtest seems to work")
 
+		case WebGetRoot() =>
+			self.reply("welcome to the reversiserver. /tournaments to start.")
+
+		case WebGetTournaments() =>
+			self.reply(getTournaments)
+
+		case WebGetTournament(tournamentIdentifier: String) =>
+
+		case WebGetGame(tournamentIdentifier, gameIdentifier: String) =>
+
+		case WebGetTurn(tournamentIdentifier, gameIdentifier: String, turnNumber: Int) =>
+
+
 		case _ => 
 			println("unknown message received")
 			val reply: String = "<a href='http://akka.io'>Akka Actors rock!</a>"
@@ -63,9 +76,9 @@ class GameServer extends Actor{
     		val tournament = Actor.actorOf(new Tournament(plan, self, remoteNode))
 		val tournamentName = (portService !! _root_.messages.RequestTournamentName()).getOrElse(throw new RuntimeException("TIMEOUT")).asInstanceOf[String]
 		log.info("GameServer: created a new tournament with the name " + tournamentName)
-		tournaments += tournamentName.asInstanceOf[String] -> tournament
-		tournament.start
-		tournament ! _root_.messages.Start()
+		tournaments += tournamentName.asInstanceOf[String] -> (tournament, false)
+//		tournament.start
+//		tournament ! _root_.messages.Start()
 
 	}
 	
@@ -79,12 +92,14 @@ class GameServer extends Actor{
 
 ////////////////////// REST Connection Stuff //////////////////
 
-	def getTournaments: Unit = {
-
+	def getTournaments: String = {
+		var result: String = ""
+		tournaments foreach ( (t2) => result = result + t2._1  + "\n")
+		return result
 	}
 
 	def getTournament(tournamentIdentifier: String): Unit = {
-
+		tournaments(tournamentIdentifier)._2.toString()
 	}
 
 	def getGames(tournamentIdentifier: String): Unit = {
@@ -111,8 +126,8 @@ object RunGameServer {
 		val gamePort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("RunGameServer: TIMEOUT"))
 		println("to test the portservice: the port I requested is: " + (gamePort match {case l: List[Int] => l(0) }).toString  )
 		
-//		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
-//		webServer.myServerStarter(gameServer)
+		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
+		webServer.myServerStarter(gameServer)
 
 		gameServer ! _root_.messages.ServerStart()
 	}

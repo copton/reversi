@@ -1,16 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Reversi>
-	<resourceName>reversi</resourceName>
-	<resourceURI>/reversi</resourceURI>
+<Root>
+	<resourceName>root</resourceName>
+	<resourceURI>/</resourceURI>
 	<methods>GET</methods>
 	<collectionMethod/>
 	<resourceDescription/>
-	<children/>
+	<children>
+		<child>
+			<Tournaments>
+				<resourceName>tournaments</resourceName>
+				<resourceURI>/tournaments</resourceURI>
+				<methods>GET</methods>
+				<collectionMethod/>
+				<resourceDescription/>
+				<children>
+					<child type="collection">
+						<Tournament>
+							<resourceName>tournament</resourceName>
+							<resourceURI>/tournaments/{tournament}</resourceURI>
+							<methods>GET</methods>
+							<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadTournament</collectionMethod>
+							<resourceDescription/>
+							<children>
+								<child type="collection">
+									<Game>
+										<resourceName>game</resourceName>
+										<resourceURI>/tournaments/{tournament}/{game}</resourceURI>
+										<methods>GET</methods>
+										<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadGame</collectionMethod>
+										<resourceDescription/>
+										<children/>
+										<getters>
+											<getter>
+												<getterName>gameGetter</getterName>
+												<getterMethod>getGame</getterMethod>
+												<getterOnChangeMethod/>
+												<getterDescription/>
+											</getter>
+										</getters>
+										<posters/>
+										<putters/>
+										<deleters/>
+										<security>
+											<inheritUsers>true</inheritUsers>
+										</security>
+									</Game>
+								</child>
+							</children>
+							<getters>
+								<getter>
+									<getterName>tournamentGetter</getterName>
+									<getterMethod>getTournament</getterMethod>
+									<getterOnChangeMethod/>
+									<getterDescription/>
+								</getter>
+							</getters>
+							<posters/>
+							<putters/>
+							<deleters/>
+							<security>
+								<inheritUsers>true</inheritUsers>
+							</security>
+						</Tournament>
+					</child>
+				</children>
+				<getters>
+					<getter>
+						<getterName>tournamentsGetter</getterName>
+						<getterMethod>tournamentsGetter</getterMethod>
+						<getterOnChangeMethod/>
+						<getterDescription/>
+					</getter>
+				</getters>
+				<posters/>
+				<putters/>
+				<deleters/>
+				<security>
+					<inheritUsers>true</inheritUsers>
+				</security>
+			</Tournaments>
+		</child>
+	</children>
 	<getters>
 		<getter>
-			<getterName>tournamentGetter</getterName>
-			<getterMethod>getTournaments</getterMethod>
+			<getterName>getRoot</getterName>
+			<getterMethod>getRoot</getterMethod>
 			<getterOnChangeMethod/>
 			<getterDescription/>
 		</getter>
@@ -21,4 +96,4 @@
 	<security>
 		<inheritUsers>true</inheritUsers>
 	</security>
-</Reversi>
+</Root>

@@ -41,6 +41,11 @@ sealed trait Message
 
 	//from webserver
 	case class WebTest() extends Message
+	case class WebGetRoot() extends Message
+	case class WebGetTournaments() extends Message
+	case class WebGetTournament(tournamentIdentifier: String) extends Message
+	case class WebGetGame(tournamentIdentifier: String, gameIdentifier: String) extends Message
+	case class WebGetTurn(tournamentIdentifier: String, gameIdentifier: String, turnNumber: Int) extends Message
 
 
 

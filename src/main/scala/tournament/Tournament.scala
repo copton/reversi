@@ -3,6 +3,7 @@ package tournament
 import akka.actor._
 import akka.util.Logging
 import scala.collection.immutable.List
+import scala.collection.mutable.HashMap
 import game._
 import gameserver._
 import tournament.plan.{DummyPlan, Plan}
@@ -13,11 +14,12 @@ import messages._
 
 class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remoteinterface.RemoteServerModule) extends Actor {
 	
-	var i = 0
+	var nameCounter: Int = 1
 
 	var gamesFinished = 0
 
 	var currentGames: List[GameDetails] = null
+	var games: HashMap[String, (ActorRef, Boolean)] = new HashMap
 	log.info("Tournament: Tournament started")
 
 
@@ -36,7 +38,7 @@ class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remo
 			log.info("Tournament: we already finished " + gamesFinished + "games")
 			plan.deliverResult(result)
 
-			remoteNode.unregister(uniqueTag.toString()) //Todo: tag stimmt wohl nicht
+			remoteNode.unregister(uniqueTag.toString())
 			gameServer ! _root_.messages.ReleasePorts(portsToReturn)
 			requestAndStartGames
 			
@@ -62,6 +64,8 @@ class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remo
 				
 					val game = GameFactory.createGame(playerPorts.asInstanceOf[List[Int]], currentGame, self, uniqueTag.asInstanceOf[Int])
 	  				remoteNode.register(uniqueTag.toString(), game)
+					games +=  "game"+nameCounter.toString()-> (game, false)
+					nameCounter = nameCounter + 1
 					game ! _root_.messages.StartGame()
 
 

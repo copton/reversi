@@ -306,7 +306,116 @@ public abstract class BaseResource {
 
 		return null;
 	}
+	
+/*	protected String getRepresentationXML() {
+		org.jdom.Document d = new org.jdom.Document();
+		org.jdom.Element r = new org.jdom.Element("resource");
+		
+		// Attach the current resource's name
+		org.jdom.Element resourceNameElement = new org.jdom.Element("name");
+		resourceNameElement.addContent(resourceName);
+		r.addContent(resourceNameElement);
+		
+		// Attach the methods allowed for the current resource
+		org.jdom.Element resourceMethodElement = new org.jdom.Element("methods");
+		if(allowGet) {
+			org.jdom.Element methodElement = new org.jdom.Element("method");
+			methodElement.addContent("GET");
+			resourceMethodElement.addContent(methodElement);
+		}
+		if(allowPost) {
+			org.jdom.Element methodElement = new org.jdom.Element("method");
+			methodElement.addContent("POST");
+			resourceMethodElement.addContent(methodElement);
+		}
+		if(allowPut) {
+			org.jdom.Element methodElement = new org.jdom.Element("method");
+			methodElement.addContent("PUT");
+			resourceMethodElement.addContent(methodElement);
+		}
+		if(allowDelete) {
+			org.jdom.Element methodElement = new org.jdom.Element("method");
+			methodElement.addContent("DELETE");
+			resourceMethodElement.addContent(methodElement);
+		}
+		resourceMethodElement.addContent("");
+		
+		r.addContent(resourceMethodElement);
+		
+		// Attach the current resource's values
+		if(getterExists) {
+			org.jdom.Element resourceContentsElement = new org.jdom.Element("getters");
+			org.jdom.Element contentsElement = new org.jdom.Element("getter");
+			
+			org.jdom.Element contentNameElement = new org.jdom.Element("name");
+			org.jdom.Element contentValueElement = new org.jdom.Element("value");
+			org.jdom.Element contentDescriptionElement = new org.jdom.Element("description");
+			
+			contentNameElement.addContent(getterName);
+			contentValueElement.addContent(getterValue);
+			contentDescriptionElement.addContent(getterDescription);
+			
+			contentsElement.addContent(contentNameElement);
+			contentsElement.addContent(contentValueElement);
+			contentsElement.addContent(contentDescriptionElement);
+			
+			resourceContentsElement.addContent(contentsElement);
+			
+			r.addContent(resourceContentsElement);
+		}
+		
+		// Attach the current resource's posters
+		if (posterExists) {
+			org.jdom.Element resourcePostersElement = new org.jdom.Element("posters");
+			org.jdom.Element posterElement = new org.jdom.Element("poster");
+			
+			org.jdom.Element contentNameElement = new org.jdom.Element("name");
+			org.jdom.Element contentDescriptionElement = new org.jdom.Element("description");
+			
+			contentNameElement.addContent(posterName);
+			contentDescriptionElement.addContent(posterDescription);
+			
+			posterElement.addContent(contentNameElement);
+			posterElement.addContent(contentDescriptionElement);
+			
+			resourcePostersElement.addContent(posterElement);
+			
+			r.addContent(resourcePostersElement);
+		}
+		
+		// Attach the current resource's children
+		if (childrenCount > 0) {
+			org.jdom.Element childrenTag = new org.jdom.Element("children");
 
+			for (int i = 0; i < childrenCount; i++) {
+				org.jdom.Element childTag = new org.jdom.Element("child");
+
+				org.jdom.Element childName = new org.jdom.Element("name");
+				childName.addContent(childrenNames.get(i));
+				childTag.addContent(childName);
+
+				// If the current resource is a leaf...
+				if (childrenURIs != null) {
+					org.jdom.Element childUri = new org.jdom.Element("uri");
+					childUri.addContent(childrenURIs.get(i));
+					childTag.addContent(childUri);
+				}
+
+				org.jdom.Element childDescription = new org.jdom.Element("description");
+				childDescription.addContent(childrenDescriptions.get(i));
+				childTag.addContent(childDescription);
+
+				childrenTag.addContent(childTag);
+			}
+
+			r.addContent(childrenTag);
+		}
+		
+		d.setRootElement(r);
+		org.jdom.output.XMLOutputter o = new org.jdom.output.XMLOutputter();
+		return o.outputString(d);
+	}
+*/	
 	public void parseResourceInformation(ServletRequest request, UriInfo uri) {
 		this.request = request;
 		this.uri = uri;

@@ -17,6 +17,8 @@ public class JerseyConstants {
 	public static String RESOURCES_DIRECTORY_PATH = "resources";
 	public static final String RESOURCES_CONFIGFILE_PATH = "config/configuration.xml";
 	public static final String RESOURCES_STYLESHEET_PATH = "/webresources/scripts/main.css";
-	public static final String RESOURCES_HTML_PATH = "webresources/html";	
+	public static final String RESOURCES_HTML_PATH = "webresources/html";
+	public static final String RESOURCES_JSON_PATH = "webresources/json";
+	public static final String RESOURCES_XML_PATH = "webresources/xml";	
 	public static final String RESOURCES_FEEDS_PATH = "/feeds";
 }
