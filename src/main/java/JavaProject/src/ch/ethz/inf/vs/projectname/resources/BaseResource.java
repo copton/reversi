@@ -307,7 +307,7 @@ public abstract class BaseResource {
 		return null;
 	}
 	
-/*	protected String getRepresentationXML() {
+	protected String getRepresentationXML() {
 		org.jdom.Document d = new org.jdom.Document();
 		org.jdom.Element r = new org.jdom.Element("resource");
 		
@@ -415,7 +415,7 @@ public abstract class BaseResource {
 		org.jdom.output.XMLOutputter o = new org.jdom.output.XMLOutputter();
 		return o.outputString(d);
 	}
-*/	
+	
 	public void parseResourceInformation(ServletRequest request, UriInfo uri) {
 		this.request = request;
 		this.uri = uri;

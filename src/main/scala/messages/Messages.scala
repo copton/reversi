@@ -11,8 +11,12 @@ sealed trait Message
 //tournament
 	//from server
 	case class Start() extends Message
-	case class GetGames()
-	case class GetGame(gameIdentifier: String)
+	case class LoadGameCollection() extends Message
+	case class GetGame(gameIdentifier: String) extends Message
+	case class GetCurrentTurn(gameIdentifier: String) extends Message
+	case class GetTurn(gameIdentifier: String, turnNumber: Int) extends Message
+	case class LoadTurnCollection(gameIdentifier: String) extends Message
+	
 
 	//from game
 	case class GameFinished(result: GameResult, game: ActorRef, portsToRelease: List[Int], namingNumber: Int) extends Message
@@ -41,11 +45,20 @@ sealed trait Message
 
 	//from webserver
 	case class WebTest() extends Message
+
 	case class WebGetRoot() extends Message
+
 	case class WebGetTournaments() extends Message
+	
 	case class WebGetTournament(tournamentIdentifier: String) extends Message
+	case class WebLoadTournamentCollection() extends Message
+
 	case class WebGetGame(tournamentIdentifier: String, gameIdentifier: String) extends Message
+	case class WebLoadGameCollection(tournamentIdentifier: String) extends Message
+
+	case class WebGetCurrentTurn(tournamentIdentifier: String, gameIdentifier: String) extends Message
 	case class WebGetTurn(tournamentIdentifier: String, gameIdentifier: String, turnNumber: Int) extends Message
+	case class WebLoadTurnCollection(tournamentIdentifier: String, gameIdentifier: String) extends Message
 
 
 

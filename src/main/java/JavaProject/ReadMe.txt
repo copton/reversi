@@ -18,3 +18,13 @@
 
 /************* INFORMATION ON CLASS Game (/tournaments/{tournament}/{game}) ****************/
 
+
+
+
+/************* INFORMATION ON CLASS Turn (/tournaments/{tournament}/{game}/{turn}) ****************/
+
+
+
+
+/************* INFORMATION ON CLASS CurrentTurn (/tournaments/{tournament}/{game}/currentturn) ****************/
+

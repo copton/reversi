@@ -30,7 +30,56 @@
 										<methods>GET</methods>
 										<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadGame</collectionMethod>
 										<resourceDescription/>
-										<children/>
+										<children>
+											<child type="collection">
+												<Turn>
+													<resourceName>turn</resourceName>
+													<resourceURI>/tournaments/{tournament}/{game}/{turn}</resourceURI>
+													<methods>GET</methods>
+													<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadTurn</collectionMethod>
+													<resourceDescription/>
+													<children/>
+													<getters>
+														<getter>
+															<getterName>turnGetter</getterName>
+															<getterMethod>getTurn</getterMethod>
+															<getterOnChangeMethod/>
+															<getterDescription/>
+														</getter>
+													</getters>
+													<posters/>
+													<putters/>
+													<deleters/>
+													<security>
+														<inheritUsers>true</inheritUsers>
+													</security>
+												</Turn>
+											</child>
+											<child>
+												<CurrentTurn>
+													<resourceName>currentTurn</resourceName>
+													<resourceURI>/tournaments/{tournament}/{game}/currentturn</resourceURI>
+													<methods>GET</methods>
+													<collectionMethod/>
+													<resourceDescription/>
+													<children/>
+													<getters>
+														<getter>
+															<getterName>currentTurnGetter</getterName>
+															<getterMethod>getCurrentTurn</getterMethod>
+															<getterOnChangeMethod/>
+															<getterDescription/>
+														</getter>
+													</getters>
+													<posters/>
+													<putters/>
+													<deleters/>
+													<security>
+														<inheritUsers>true</inheritUsers>
+													</security>
+												</CurrentTurn>
+											</child>
+										</children>
 										<getters>
 											<getter>
 												<getterName>gameGetter</getterName>
@@ -68,7 +117,7 @@
 				<getters>
 					<getter>
 						<getterName>tournamentsGetter</getterName>
-						<getterMethod>tournamentsGetter</getterMethod>
+						<getterMethod>getTournaments</getterMethod>
 						<getterOnChangeMethod/>
 						<getterDescription/>
 					</getter>
@@ -84,7 +133,7 @@
 	</children>
 	<getters>
 		<getter>
-			<getterName>getRoot</getterName>
+			<getterName>rootGetter</getterName>
 			<getterMethod>getRoot</getterMethod>
 			<getterOnChangeMethod/>
 			<getterDescription/>

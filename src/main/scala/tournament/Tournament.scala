@@ -31,6 +31,23 @@ class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remo
 		case Start() => 
 			log.info("received a Start-message")
 			requestAndStartGames			
+
+		case LoadGameCollection()  =>
+			var result: String = ""
+			games foreach ( (t2) => result = result + t2._1  + "\n")
+			self.reply(result)
+
+		case GetGame(gameIdentifier: String) =>
+			self.reply("game finished: " + games(gameIdentifier)._2.toString() )
+
+		case GetCurrentTurn(gameIdentifier: String)  =>
+			val game = games(gameIdentifier)._2
+			
+
+		case GetTurn(gameIdentifier: String, turnNumber: Int)  =>
+
+		case LoadTurnCollection(gameIdentifier: String)  =>
+		
 	
 		
 		case GameFinished(result: GameResult, finishedGame: ActorRef, portsToReturn: List[Int], uniqueTag: Int) => 

@@ -58,12 +58,13 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
  
     		val player = players(nextPlayer)
     		possibleMoves = board.getPossibleMoves(player.color)
+
+		val gameResult = new DummyGameResult
   
     		if (possibleMoves == Nil && board.getPossibleMoves(Color.other(player.color)) == Nil) {
     			log.info("game finished:" + board)
     			val redCount = board.countStones(Color.RED)
 		     	val greenCount = board.countStones(Color.GREEN)
-			val gameResult = new DummyGameResult
 			gameResult.board = board.toString()
 		      	if (redCount == greenCount) {log.info("draw game"); gameResult.winner = "draw game"}
 		      	else if (redCount > greenCount) {log.info("RED player wins with " + redCount + " to " + greenCount + "."); gameResult.winner = "red"}

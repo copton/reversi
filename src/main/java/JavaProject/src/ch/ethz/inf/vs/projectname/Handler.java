@@ -25,36 +25,66 @@ public class Handler {
 
 	public static List<String> loadTournament(HashMap<String, Object> source) {
 		System.out.println("A reflexive call has been executed on the dynamic resource \"" + source + "\"");
-		Object o = JerseyMain.REVERSI.sendRequestReply(new WebGetTournaments());
+		Object o = JerseyMain.REVERSI.sendRequestReply(new WebLoadTournamentCollection());
 		StringTokenizer st = new StringTokenizer( (String)o, "\n");	
 		List<String> returnList = new ArrayList<String>();
 		while(st.hasMoreTokens()) {
 			returnList.add(st.nextToken());
 		}
 		return returnList;
-	}
+	 }
 
-	public static String tournamentsGetter(HashMap<String, Object> source) {
+	public static String getTournaments(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
-		return "Hello World!";
+		Object o = JerseyMain.REVERSI.sendRequestReply(new WebGetTournaments());
+		return (String)o;
 	}
 
 	public static List<String> loadGame(HashMap<String, Object> source) {
+		
+		System.out.println("A reflexive call has been executed on the dynamic resource \"" + source + "\"");
+		String argument = source.get("tournament").toString();
+		argument = argument.substring(1, argument.length()-1);
+		Object o = JerseyMain.REVERSI.sendRequestReply(new WebLoadGameCollection(argument));
+		StringTokenizer st = new StringTokenizer( (String)o, "\n");	
+		List<String> returnList = new ArrayList<String>();
+		while(st.hasMoreTokens()) {
+			returnList.add(st.nextToken());
+		}
+		return returnList;
+	 }
+
+	public static String getTournament(HashMap<String, Object> source) {
+		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
+		
+		return "Hello World!";
+	}
+
+	public static List<String> loadTurn(HashMap<String, Object> source) {
+	
 		System.out.println("A reflexive call has been executed on the dynamic resource \"" + source + "\"");
 		List<String> returnList = new ArrayList<String>();
 		returnList.add("Subresource1");
 		returnList.add("Subresource2");
 		returnList.add("Subresource3");
 		return returnList;
-	}
-
-	public static String getTournament(HashMap<String, Object> source) {
-		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
-		return "Hello World!";
-	}
+	 }
 
 	public static String getGame(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
+	
+		return "Hello World!";
+	}
+
+	public static String getTurn(HashMap<String, Object> source) {
+		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
+
+		return "Hello World!";
+	}
+
+	public static String getCurrentTurn(HashMap<String, Object> source) {
+		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
+		
 		return "Hello World!";
 	}
 
