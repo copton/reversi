@@ -51,12 +51,12 @@ object RunPlayer extends Logging {
 		val playerPort = args(0).toInt
 		val gamePort = args(1).toInt
 		val uniqueTag = args(2)
-    		val game = Actor.remote.actorFor(uniqueTag.toString(), "localhost", gamePort)
+    		val game = Actor.remote.actorFor(uniqueTag, "localhost", gamePort)
     		val player = Actor.actorOf(new Player(playerPort, game, gamePort))
 //  		player.start
 
     		val playerServer = Actor.remote.start("localhost", playerPort)
-    		playerServer.register("player", player)
+    		playerServer.register(uniqueTag+"/player", player)
 		player ! _root_.messages.TestStart()
 //  		game ! _root_.messages.Started(playerPort)
   	}

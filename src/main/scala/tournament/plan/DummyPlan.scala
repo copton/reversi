@@ -13,13 +13,12 @@ import messages._
 
 class DummyPlan extends Plan {
 
+
+	var finishedGames: List[ActorRef] = Nil
 	var count: Int = 0
 
-	def deliverResult(result: GameResult): Unit = {
-		result match { case d: DummyGameResult => 
-			println("DummyGamePlan: the Winner is: " + d.winner)
-			println(d.board)
-		}
+	def deliverFinishedGame(game: ActorRef): Unit = {
+		finishedGames = game::finishedGames
 	
 	}
 

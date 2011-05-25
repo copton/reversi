@@ -11,7 +11,7 @@
 			<Tournaments>
 				<resourceName>tournaments</resourceName>
 				<resourceURI>/tournaments</resourceURI>
-				<methods>GET</methods>
+				<methods>GET,POST</methods>
 				<collectionMethod/>
 				<resourceDescription/>
 				<children>
@@ -19,7 +19,7 @@
 						<Tournament>
 							<resourceName>tournament</resourceName>
 							<resourceURI>/tournaments/{tournament}</resourceURI>
-							<methods>GET</methods>
+							<methods>GET,DELETE,PUT</methods>
 							<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadTournament</collectionMethod>
 							<resourceDescription/>
 							<children>
@@ -106,8 +106,22 @@
 								</getter>
 							</getters>
 							<posters/>
-							<putters/>
-							<deleters/>
+							<putters>
+								<putter>
+									<putterName>tournamentPutter</putterName>
+									<putterMethod>putTournament</putterMethod>
+									<putterArgType>String</putterArgType>
+									<putterShowType>Text</putterShowType>
+									<putterDescription/>
+								</putter>
+							</putters>
+							<deleters>
+								<deleter>
+									<deleterName>tournamentDeleter</deleterName>
+									<deleterMethod>deleteTournament</deleterMethod>
+									<deleterDescription/>
+								</deleter>
+							</deleters>
 							<security>
 								<inheritUsers>true</inheritUsers>
 							</security>
@@ -122,7 +136,15 @@
 						<getterDescription/>
 					</getter>
 				</getters>
-				<posters/>
+				<posters>
+					<poster>
+						<posterName>tournamentsUploadPoster</posterName>
+						<posterMethod>postTournamentsUpload</posterMethod>
+						<posterArgType>String</posterArgType>
+						<posterShowType>Text</posterShowType>
+						<posterDescription/>
+					</poster>
+				</posters>
 				<putters/>
 				<deleters/>
 				<security>

@@ -35,7 +35,7 @@ class PortService(var basePort: Int) extends Actor{
 			}
 
 		case RequestTournamentName() =>
-			self.reply("Tournament"+tournamentNameCounter)
+			self.reply("tournament"+tournamentNameCounter)
 			tournamentNameCounter = tournamentNameCounter + 1
 
 		case RequestTag() =>

@@ -8,9 +8,9 @@ import tournament.misc.GameDetails
 trait Plan {
 
 	/**
-	 * delivers the result of a finished game to the plan.
+	 * delivers the ActorRef of the finished game.
 	 **/	
-	def deliverResult(result: GameResult): Unit
+	def deliverFinishedGame(game: ActorRef): Unit
 
 	
 	/**

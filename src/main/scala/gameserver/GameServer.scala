@@ -52,37 +52,23 @@ class GameServer extends Actor{
 			self.reply("Webtest seems to work")
 
 		case WebGetRoot() =>
-			self.reply("welcome to the reversiserver. /tournaments to start.")
+			self.reply("Welcome!")
+
+		case WebLoadTournamentCollection() =>
+			var result: String = ""
+			tournaments foreach ( (t1) => result = result + t1._1 + "\n")
+			self.reply(result)
 
 		case WebGetTournaments() =>
-			self.reply(getTournaments)
+			self.reply("Amount of Tournaments: " + tournaments.size)
 
-		case WebGetTournament(tournamentIdentifier: String) =>
-			self.reply(getTournament(tournamentIdentifier))
-
-		case WebLoadTournamentCollection()  =>
-			self.reply(loadTournamentCollection)
-
-		case WebGetGame(tournamentIdentifier: String, gameIdentifier: String)  =>
-			self.reply(getGame(tournamentIdentifier, gameIdentifier))
-
-		case WebLoadGameCollection(tournamentIdentifier: String)  =>
-			self.reply(loadGameCollection(tournamentIdentifier))
-
-		case WebGetCurrentTurn(tournamentIdentifier: String, gameIdentifier: String)  =>
-			self.reply(getCurrentTurn(tournamentIdentifier, gameIdentifier))
-
-		case WebGetTurn(tournamentIdentifier: String, gameIdentifier: String, turnNumber: Int)  =>
-			self.reply(getTurn(tournamentIdentifier: String, gameIdentifier: String, turnNumber: Int))
-
-		case WebLoadTurnCollection(tournamentIdentifier: String, gameIdentifier: String)  =>
-			self.reply(loadTurnCollection(tournamentIdentifier, gameIdentifier))
-
+		case WebRequestActor(actorName: String) =>
+			self.reply(Actor.remote.actorFor(actorName, "localhost", remoteNodePort))
 
 
 
 		case _ => 
-			println("unknown message received")
+			println("unknown message received ")
 			val reply: String = "<a href='http://akka.io'>Akka Actors rock!</a>"
 			self.reply(reply)
 			
@@ -90,8 +76,8 @@ class GameServer extends Actor{
 
 	def startTestTournament(remoteNode: akka.remoteinterface.RemoteServerModule): Unit = {
   		val plan = new DummyPlan
-    		val tournament = Actor.actorOf(new Tournament(plan, self, remoteNode))
 		val tournamentName = (portService !! _root_.messages.RequestTournamentName()).getOrElse(throw new RuntimeException("TIMEOUT")).asInstanceOf[String]
+		val tournament = Actor.actorOf(new Tournament(plan, self, remoteNode, "/tournaments/"+tournamentName.toString()))
 		log.info("GameServer: created a new tournament with the name " + tournamentName)
 		tournaments += tournamentName.asInstanceOf[String] -> (tournament, false)
 		tournament.start
@@ -109,58 +95,7 @@ class GameServer extends Actor{
 
 ////////////////////// REST Connection Stuff //////////////////
 
-	//Tournaments
-	def getTournaments: String = {
-		var result: String = "Amount of Tournaments: "
-		result = result + tournaments.size.toString()
-		return result
-	}
-
-
-	//Tournament
-	def loadTournamentCollection: String = {
-		var result: String = ""
-		tournaments foreach ( (t2) => result = result + t2._1  + "\n")
-		return result
-	}
-
-
-	def getTournament(tournamentIdentifier: String): Unit = {
-		tournaments(tournamentIdentifier)._2.toString()
-	}
-
-	//Game
-	def getGame(tournamentIdentifier: String, gameIdentifier: String): String = {
-		val tournament = tournaments(tournamentIdentifier)._1
-		val result = (tournament !! _root_.messages.GetGame(gameIdentifier)).getOrElse(throw new RuntimeException("TIMEOUT"))
-		return result.toString()
-		
-	}
-
-	def loadGameCollection(tournamentIdentifier: String): String = {
-		val tournament = tournaments(tournamentIdentifier)._1
-		val result = (tournament !! _root_.messages.LoadGameCollection()).getOrElse(throw new RuntimeException("TIMEOUT"))
-		return result.toString()
-	}
-
-	//Turn
-	def getCurrentTurn(tournamentIdentifier: String, gameIdentifier: String): String = {
-		val tournament = tournaments(tournamentIdentifier)._1
-		val result = (tournament !! _root_.messages.GetCurrentTurn(gameIdentifier)).getOrElse(throw new RuntimeException("TIMEOUT"))
-		return result.toString()
-	}
 	
-	def getTurn(tournamentIdentifier: String, gameIdentifier: String, turnNumber: Int): String = {
-		val tournament = tournaments(tournamentIdentifier)._1
-		val result = (tournament !! _root_.messages.GetTurn(gameIdentifier, turnNumber)).getOrElse(throw new RuntimeException("TIMEOUT"))
-		return result.toString()
-	}
-
-	def loadTurnCollection(tournamentIdentifier: String, gameIdentifier: String): String = {
-		val tournament = tournaments(tournamentIdentifier)._1
-		val result = (tournament !! _root_.messages.LoadTurnCollection(gameIdentifier)).getOrElse(throw new RuntimeException("TIMEOUT"))
-		return result.toString()
-	}
 
 
 ////////////////////////////////////////////////////////////////

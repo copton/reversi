@@ -12,18 +12,20 @@ import reversi.Color
 import messages._
 
 
-class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remoteinterface.RemoteServerModule) extends Actor {
+class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remoteinterface.RemoteServerModule, val name: String) extends Actor {
 	
-	var nameCounter: Int = 1
 
 	var gamesFinished = 0
 
 	var currentGames: List[GameDetails] = null
 	var games: HashMap[String, (ActorRef, Boolean)] = new HashMap
+
 	log.info("Tournament: Tournament started")
 
 
-	
+	override def preStart = {
+		remoteNode.register(name, self)
+	}
 	
 	
 	def receive = {
@@ -31,36 +33,28 @@ class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remo
 		case Start() => 
 			log.info("received a Start-message")
 			requestAndStartGames			
-
-		case LoadGameCollection()  =>
-			var result: String = ""
-			games foreach ( (t2) => result = result + t2._1  + "\n")
-			self.reply(result)
-
-		case GetGame(gameIdentifier: String) =>
-			self.reply("game finished: " + games(gameIdentifier)._2.toString() )
-
-		case GetCurrentTurn(gameIdentifier: String)  =>
-			val game = games(gameIdentifier)._2
-			
-
-		case GetTurn(gameIdentifier: String, turnNumber: Int)  =>
-
-		case LoadTurnCollection(gameIdentifier: String)  =>
 		
 	
 		
-		case GameFinished(result: GameResult, finishedGame: ActorRef, portsToReturn: List[Int], uniqueTag: Int) => 
+		case GameFinished(finishedGame: ActorRef, portsToReturn: List[Int], uniqueTag: String) => 
 			gamesFinished = gamesFinished + 1
 			log.info("Tournament: we already finished " + gamesFinished + "games")
-			plan.deliverResult(result)
+			plan.deliverFinishedGame(finishedGame)
 
-			remoteNode.unregister(uniqueTag.toString())
 			gameServer ! _root_.messages.ReleasePorts(portsToReturn)
 			requestAndStartGames
 			
-		
-  	  	case _ =>      println("received unknown message")
+		case WebLoadGameCollection() =>
+			var result: String = ""
+			games foreach ( (t1) => result = result + t1._1 + "\n")
+			self.reply(result)
+
+		case WebGetTournament() =>
+			self.reply("Amount of finished games: " + gamesFinished.toString() + "\n are we finished?: " + plan.finished.toString())
+
+  	  	case _ =>
+			println(name +  ": received unknown message")
+			self.reply("OK")
 
 	}	
 
@@ -77,12 +71,11 @@ class Tournament(val plan: Plan, val gameServer: ActorRef, remoteNode: akka.remo
 					val playerPorts = (gameServer !! _root_.messages.RequestPorts(2)).getOrElse(throw new RuntimeException("TIMEOUT"))
 					log.info("Tournament: the playerPorts are: " + (playerPorts.asInstanceOf[List[Int]])(0) + " and " + (playerPorts.asInstanceOf[List[Int]])(1))
 					val uniqueTag = (gameServer !! RequestTag()).getOrElse(throw new RuntimeException("TIMEOUT"))
-					log.info("Tournament: the tag for this game is: " + uniqueTag.toString())
-				
-					val game = GameFactory.createGame(playerPorts.asInstanceOf[List[Int]], currentGame, self, uniqueTag.asInstanceOf[Int])
-	  				remoteNode.register(uniqueTag.toString(), game)
-					games +=  "game"+nameCounter.toString()-> (game, false)
-					nameCounter = nameCounter + 1
+					val gameName: String = name +"/game" + uniqueTag.toString()
+					log.info("Tournament: the tag for this game is: " + uniqueTag.toString() + " and therefore, the gamename is: " + gameName)
+					val game = GameFactory.createGame(playerPorts.asInstanceOf[List[Int]], currentGame, self, gameName)
+	  				remoteNode.register(gameName, game)
+					games +="game"+uniqueTag.toString()-> (game, false)
 					game ! _root_.messages.StartGame()
 
 

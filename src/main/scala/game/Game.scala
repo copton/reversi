@@ -3,43 +3,42 @@ package game
 import akka.actor.{Actor, ActorRef}
 //import akka.remote
 import akka.util.Logging
-import scala.collection.mutable.HashMap
+import scala.collection.immutable.TreeMap
 import scala.collection.immutable.List
+import scala.math.Ordering
 import reversi.{Color, Position}
 import tournament._
 import tournament.misc.GameDetails
-import tournament.misc.GameResult
-import tournament.misc.DummyGameResult
 import tournament.misc.DummyGameOption
 import player._
 import java.net.InetSocketAddress
 import messages._
 
 
-class Player(val name: String, val port: Int, val color: Color, val uniqueTag: Int) {
+class Player(val name: String, val port: Int, val color: Color, val uniqueTag: String) {
 	var actor: Option[ActorRef] = None
 	var proc: Option[PlayerProc] = None
   	var ready = false
 }
 
 trait gameCreation {
-	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: Int): ActorRef
+	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: String): ActorRef
 }
 
 object GameFactory extends gameCreation {
-	private def createPlayer(className: String, playerPort: Int, playerColor: Color, uniqueTag: Int): Player = {
+	private def createPlayer(className: String, playerPort: Int, playerColor: Color, uniqueTag: String): Player = {
 	
 		return new Player(className, playerPort, playerColor, uniqueTag);
 	}
 
-	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: Int): ActorRef = {
-		val player1 = createPlayer(details.players(0), playerPorts(0), details.options(0).asInstanceOf[DummyGameOption].colors(0), uniqueTag) //TODO add exception case
+	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: String): ActorRef = {
+		val player1 = createPlayer(details.players(0), playerPorts(0), details.options(0).asInstanceOf[DummyGameOption].colors(0), uniqueTag) 
 		val player2 = createPlayer(details.players(1), playerPorts(1), details.options(0).asInstanceOf[DummyGameOption].colors(1), uniqueTag)
-		Actor.actorOf(new Game(9999, Array(player1, player2), tournament))
+		Actor.actorOf(new Game(9999, Array(player1, player2), tournament, uniqueTag))
 	}
 }
 
-class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) extends Actor with Logging {
+class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, name: String) extends Actor with Logging {
   
 	assert ((players map (_.port)).distinct.size == players.size, "each player needs a different port!")
 
@@ -48,8 +47,18 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
 	var lastMove: Option[Position] = None	
 	var possibleMoves: List[Position] = Nil
   	var nextMovePending = false
-
-
+	var winner: String = "not yet known"
+	
+	var turnNumber: Int = 1
+	var turns: TreeMap[String, String] = new TreeMap()/*(new Ordering[String]{
+		override def compare(s1: String, s2: String): Int = {
+			if( s1.substring(4, s1.length-1).toInt >= s2.substring(4, s2.length-1).toInt ) {
+				1
+			} else {
+				-1
+			}
+		}
+	})*/
 
 
   	private def nextMove() {
@@ -59,16 +68,17 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
     		val player = players(nextPlayer)
     		possibleMoves = board.getPossibleMoves(player.color)
 
-		val gameResult = new DummyGameResult
+		turns += "turn" + turnNumber.toString() -> board.toString()
+		
+
   
     		if (possibleMoves == Nil && board.getPossibleMoves(Color.other(player.color)) == Nil) {
     			log.info("game finished:" + board)
     			val redCount = board.countStones(Color.RED)
 		     	val greenCount = board.countStones(Color.GREEN)
-			gameResult.board = board.toString()
-		      	if (redCount == greenCount) {log.info("draw game"); gameResult.winner = "draw game"}
-		      	else if (redCount > greenCount) {log.info("RED player wins with " + redCount + " to " + greenCount + "."); gameResult.winner = "red"}
-		      	else {log.info("GREEN player wins with " + greenCount + " to " + redCount + "."); gameResult.winner = "green"}			
+		      	if (redCount == greenCount) {log.info("draw game"); winner = "draw game"}
+		      	else if (redCount > greenCount) {log.info("RED player wins with " + redCount + " to " + greenCount + "."); winner = "RED"}
+		      	else {log.info("GREEN player wins with " + greenCount + " to " + redCount + "."); winner = "Green"}			
 
 			//cleanup, destroying connections, ...
 			var portsToReturn: List[Int] = players(0).port::players(1).port::Nil
@@ -78,10 +88,11 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
 				Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", player.port))	
 	    		}
 
-			tournament ! _root_.messages.GameFinished(gameResult, self, portsToReturn, players(0).uniqueTag)
+			tournament ! _root_.messages.GameFinished(self, portsToReturn, players(0).uniqueTag)
 		} else {
 		      	player.actor.get ! _root_.messages.RequestNextMove(board, lastMove)
 		      	nextPlayer = (nextPlayer + 1) % players.size
+			turnNumber = turnNumber + 1
 		}
 	}
 
@@ -145,6 +156,23 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef) 
   		case PlayerExit(player, exitCode) =>
       			player.proc.get.join()
       			log.info("Player " + player.name + " exited with exit code " + exitCode.toString + ".")
+			
+		case WebLoadTurnCollection() =>
+			println("loading turncollection...")
+			var result: String = ""
+			turns foreach ( (t1) => result = result + t1._1 + "\n")
+			self.reply(result)
+
+		case WebGetGame() =>
+			self.reply("the winner is: " + winner)
+		
+		case WebGetTurn(turn: String) =>
+			var result: String = turns(turn)
+			self.reply(result)
+
+		case WebGetCurrentTurn() =>
+			var result: String = turns("turn" + turnNumber.toString() )
+			self.reply(result)
 			
 
     		case msg => log.info("received message: " + msg)
