@@ -21,10 +21,20 @@
 
 
 
-/************* INFORMATION ON CLASS Turn (/tournaments/{tournament}/{game}/{turn}) ****************/
+/************* INFORMATION ON CLASS Player (/tournaments/{tournament}/{game}/{player}) ****************/
 
 
 
 
 /************* INFORMATION ON CLASS CurrentTurn (/tournaments/{tournament}/{game}/currentturn) ****************/
+
+
+
+
+/************* INFORMATION ON CLASS Turns (/tournaments/{tournament}/{game}/turns) ****************/
+
+
+
+
+/************* INFORMATION ON CLASS Turn (/tournaments/{tournament}/{game}/turns/{turn}) ****************/
 

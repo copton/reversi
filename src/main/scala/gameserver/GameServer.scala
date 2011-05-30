@@ -2,6 +2,7 @@ package gameserver
 
 import akka.actor._
 import scala.collection.mutable.HashMap
+import java.lang.Thread
 import tournament._
 import tournament.plan._
 import gameserver.ports.PortService
@@ -113,14 +114,21 @@ object RunGameServer {
 		val gamePort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("RunGameServer: TIMEOUT"))
 		println("to test the portservice: the port I requested is: " + (gamePort match {case l: List[Int] => l(0) }).toString  )
 		
-		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
-		webServer.myServerStarter(gameServer)
+		var WebServer = new WebServerThread(gameServer)
+		WebServer.start()
+//		var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
+//		webServer.myServerStarter(gameServer)
 
 		gameServer ! _root_.messages.ServerStart()
 	}
 }
 
+class WebServerThread(var gameServer: ActorRef) extends Thread {
 
+	var webServer = new _root_.ch.ethz.inf.vs.projectname.JerseyMain()
+
+	override def run() = webServer.myServerStarter(gameServer)
+}
 
 
  

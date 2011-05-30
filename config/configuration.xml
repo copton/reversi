@@ -5,22 +5,25 @@
 	<resourceURI>/</resourceURI>
 	<methods>GET</methods>
 	<collectionMethod/>
+	<collectionMethodType>NONE</collectionMethodType>
 	<resourceDescription/>
 	<children>
 		<child>
 			<Tournaments>
 				<resourceName>tournaments</resourceName>
 				<resourceURI>/tournaments</resourceURI>
-				<methods>GET,POST</methods>
+				<methods>GET, POST</methods>
 				<collectionMethod/>
+				<collectionMethodType>NONE</collectionMethodType>
 				<resourceDescription/>
 				<children>
 					<child type="collection">
 						<Tournament>
 							<resourceName>tournament</resourceName>
 							<resourceURI>/tournaments/{tournament}</resourceURI>
-							<methods>GET,DELETE,PUT</methods>
+							<methods>GET, POST</methods>
 							<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadTournament</collectionMethod>
+							<collectionMethodType>JAVA</collectionMethodType>
 							<resourceDescription/>
 							<children>
 								<child type="collection">
@@ -29,31 +32,36 @@
 										<resourceURI>/tournaments/{tournament}/{game}</resourceURI>
 										<methods>GET</methods>
 										<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadGame</collectionMethod>
+										<collectionMethodType>JAVA</collectionMethodType>
 										<resourceDescription/>
 										<children>
 											<child type="collection">
-												<Turn>
-													<resourceName>turn</resourceName>
-													<resourceURI>/tournaments/{tournament}/{game}/{turn}</resourceURI>
+												<Player>
+													<resourceName>player</resourceName>
+													<resourceURI>/tournaments/{tournament}/{game}/{player}</resourceURI>
 													<methods>GET</methods>
-													<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadTurn</collectionMethod>
+													<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadPlayer</collectionMethod>
+													<collectionMethodType>JAVA</collectionMethodType>
 													<resourceDescription/>
 													<children/>
-													<getters>
-														<getter>
-															<getterName>turnGetter</getterName>
-															<getterMethod>getTurn</getterMethod>
-															<getterOnChangeMethod/>
-															<getterDescription/>
-														</getter>
-													</getters>
-													<posters/>
-													<putters/>
-													<deleters/>
+													<getter>
+														<getterName>playerGetter</getterName>
+														<getterMethod>getPlayer</getterMethod>
+														<getterMethodType>JAVA</getterMethodType>
+														<getterOnChangeMethod/>
+														<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+														<getterDescription/>
+														<security>
+															<inheritUsers>true</inheritUsers>
+														</security>
+													</getter>
+													<poster/>
+													<putter/>
+													<deleter/>
 													<security>
 														<inheritUsers>true</inheritUsers>
 													</security>
-												</Turn>
+												</Player>
 											</child>
 											<child>
 												<CurrentTurn>
@@ -61,109 +69,186 @@
 													<resourceURI>/tournaments/{tournament}/{game}/currentturn</resourceURI>
 													<methods>GET</methods>
 													<collectionMethod/>
+													<collectionMethodType>NONE</collectionMethodType>
 													<resourceDescription/>
 													<children/>
-													<getters>
-														<getter>
-															<getterName>currentTurnGetter</getterName>
-															<getterMethod>getCurrentTurn</getterMethod>
-															<getterOnChangeMethod/>
-															<getterDescription/>
-														</getter>
-													</getters>
-													<posters/>
-													<putters/>
-													<deleters/>
+													<getter>
+														<getterName>currentTurnGetter</getterName>
+														<getterMethod>getCurrentTurn</getterMethod>
+														<getterMethodType>JAVA</getterMethodType>
+														<getterOnChangeMethod/>
+														<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+														<getterDescription/>
+														<security>
+															<inheritUsers>true</inheritUsers>
+														</security>
+													</getter>
+													<poster/>
+													<putter/>
+													<deleter/>
 													<security>
 														<inheritUsers>true</inheritUsers>
 													</security>
 												</CurrentTurn>
 											</child>
+											<child>
+												<Turns>
+													<resourceName>turns</resourceName>
+													<resourceURI>/tournaments/{tournament}/{game}/turns</resourceURI>
+													<methods>GET</methods>
+													<collectionMethod/>
+													<collectionMethodType>NONE</collectionMethodType>
+													<resourceDescription/>
+													<children>
+														<child type="collection">
+															<Turn>
+																<resourceName>turn</resourceName>
+																<resourceURI>/tournaments/{tournament}/{game}/turns/{turn}</resourceURI>
+																<methods>GET</methods>
+																<collectionMethod>ch.ethz.inf.vs.projectname.Handler.loadTurn</collectionMethod>
+																<collectionMethodType>JAVA</collectionMethodType>
+																<resourceDescription/>
+																<children/>
+																<getter>
+																	<getterName>turnGetter</getterName>
+																	<getterMethod>getTurn</getterMethod>
+																	<getterMethodType>JAVA</getterMethodType>
+																	<getterOnChangeMethod/>
+																	<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+																	<getterDescription/>
+																	<security>
+																		<inheritUsers>true</inheritUsers>
+																	</security>
+																</getter>
+																<poster/>
+																<putter/>
+																<deleter/>
+																<security>
+																	<inheritUsers>true</inheritUsers>
+																</security>
+															</Turn>
+														</child>
+													</children>
+													<getter>
+														<getterName>turnsGetter</getterName>
+														<getterMethod>getTurns</getterMethod>
+														<getterMethodType>JAVA</getterMethodType>
+														<getterOnChangeMethod/>
+														<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+														<getterDescription/>
+														<security>
+															<inheritUsers>true</inheritUsers>
+														</security>
+													</getter>
+													<poster/>
+													<putter/>
+													<deleter/>
+													<security>
+														<inheritUsers>true</inheritUsers>
+													</security>
+												</Turns>
+											</child>
 										</children>
-										<getters>
-											<getter>
-												<getterName>gameGetter</getterName>
-												<getterMethod>getGame</getterMethod>
-												<getterOnChangeMethod/>
-												<getterDescription/>
-											</getter>
-										</getters>
-										<posters/>
-										<putters/>
-										<deleters/>
+										<getter>
+											<getterName>gameGetter</getterName>
+											<getterMethod>getGame</getterMethod>
+											<getterMethodType>JAVA</getterMethodType>
+											<getterOnChangeMethod/>
+											<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+											<getterDescription/>
+											<security>
+												<inheritUsers>true</inheritUsers>
+											</security>
+										</getter>
+										<poster/>
+										<putter/>
+										<deleter/>
 										<security>
 											<inheritUsers>true</inheritUsers>
 										</security>
 									</Game>
 								</child>
 							</children>
-							<getters>
-								<getter>
-									<getterName>tournamentGetter</getterName>
-									<getterMethod>getTournament</getterMethod>
-									<getterOnChangeMethod/>
-									<getterDescription/>
-								</getter>
-							</getters>
-							<posters/>
-							<putters>
-								<putter>
-									<putterName>tournamentPutter</putterName>
-									<putterMethod>putTournament</putterMethod>
-									<putterArgType>String</putterArgType>
-									<putterShowType>Text</putterShowType>
-									<putterDescription/>
-								</putter>
-							</putters>
-							<deleters>
-								<deleter>
-									<deleterName>tournamentDeleter</deleterName>
-									<deleterMethod>deleteTournament</deleterMethod>
-									<deleterDescription/>
-								</deleter>
-							</deleters>
+							<getter>
+								<getterName>tournamentGetter</getterName>
+								<getterMethod>getTournament</getterMethod>
+								<getterMethodType>JAVA</getterMethodType>
+								<getterOnChangeMethod/>
+								<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+								<getterDescription/>
+								<security>
+									<inheritUsers>true</inheritUsers>
+								</security>
+							</getter>
+							<poster>
+								<posterName>tournamentPoster</posterName>
+								<posterMethod>postTournament</posterMethod>
+								<posterMethodType>JAVA</posterMethodType>
+								<posterArgType>String</posterArgType>
+								<posterShowType>None</posterShowType>
+								<posterDescription/>
+								<security>
+									<inheritUsers>true</inheritUsers>
+									<definedUsers>
+										<user>YWRtaW46MTIz</user>
+									</definedUsers>
+								</security>
+							</poster>
+							<putter/>
+							<deleter/>
 							<security>
 								<inheritUsers>true</inheritUsers>
 							</security>
 						</Tournament>
 					</child>
 				</children>
-				<getters>
-					<getter>
-						<getterName>tournamentsGetter</getterName>
-						<getterMethod>getTournaments</getterMethod>
-						<getterOnChangeMethod/>
-						<getterDescription/>
-					</getter>
-				</getters>
-				<posters>
-					<poster>
-						<posterName>tournamentsUploadPoster</posterName>
-						<posterMethod>postTournamentsUpload</posterMethod>
-						<posterArgType>String</posterArgType>
-						<posterShowType>Text</posterShowType>
-						<posterDescription/>
-					</poster>
-				</posters>
-				<putters/>
-				<deleters/>
+				<getter>
+					<getterName>tournamentsGetter</getterName>
+					<getterMethod>getTournaments</getterMethod>
+					<getterMethodType>JAVA</getterMethodType>
+					<getterOnChangeMethod/>
+					<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+					<getterDescription/>
+					<security>
+						<inheritUsers>true</inheritUsers>
+					</security>
+				</getter>
+				<poster>
+					<posterName>tournamentsPoster</posterName>
+					<posterMethod>postTournaments</posterMethod>
+					<posterMethodType>JAVA</posterMethodType>
+					<posterArgType>String</posterArgType>
+					<posterShowType>None</posterShowType>
+					<posterDescription/>
+					<security>
+						<inheritUsers>true</inheritUsers>
+						<definedUsers>
+							<user>YWRtaW46MTIz</user>
+						</definedUsers>
+					</security>
+				</poster>
+				<putter/>
+				<deleter/>
 				<security>
 					<inheritUsers>true</inheritUsers>
 				</security>
 			</Tournaments>
 		</child>
 	</children>
-	<getters>
-		<getter>
-			<getterName>rootGetter</getterName>
-			<getterMethod>getRoot</getterMethod>
-			<getterOnChangeMethod/>
-			<getterDescription/>
-		</getter>
-	</getters>
-	<posters/>
-	<putters/>
-	<deleters/>
+	<getter>
+		<getterName>rootGetter</getterName>
+		<getterMethod>getRoot</getterMethod>
+		<getterMethodType>JAVA</getterMethodType>
+		<getterOnChangeMethod/>
+		<getterOnChangeMethodType>NONE</getterOnChangeMethodType>
+		<getterDescription/>
+		<security>
+			<inheritUsers>true</inheritUsers>
+		</security>
+	</getter>
+	<poster/>
+	<putter/>
+	<deleter/>
 	<security>
 		<inheritUsers>true</inheritUsers>
 	</security>

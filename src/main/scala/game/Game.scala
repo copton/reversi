@@ -50,15 +50,15 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 	var winner: String = "not yet known"
 	
 	var turnNumber: Int = 1
-	var turns: TreeMap[String, String] = new TreeMap()/*(new Ordering[String]{
+	var turns: TreeMap[String, String] = new TreeMap()(new Ordering[String]{
 		override def compare(s1: String, s2: String): Int = {
-			if( s1.substring(4, s1.length-1).toInt >= s2.substring(4, s2.length-1).toInt ) {
-				1
+			if( s1.substring(4, s1.length).toInt >= s2.substring(4, s2.length).toInt ) {
+				return 1
 			} else {
-				-1
+				return -1
 			}
 		}
-	})*/
+	})
 
 
   	private def nextMove() {

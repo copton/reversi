@@ -47,43 +47,53 @@ public abstract class BaseResource {
 	protected static String hostIdentifier;
 
 	// Number of children and values
-	protected static Integer childrenCount = 0;
-	protected static boolean getterExists = false;
-	protected static boolean posterExists = false;
+	protected Integer childrenCount = 0;
+	protected boolean getterExists = false;
+	protected boolean posterExists = false;
+	protected boolean putterExists = false;
+	protected boolean deleterExists = false;
 
 	// Structure Information
-	protected static String resourceName = null;
-	protected static String resourceDescription = null;
-	protected static String resourceURI = null;
-	protected static String parentURI = null;
-	protected static String parentName = null;
+	protected String resourceName = null;
+	protected String resourceDescription = null;
+	protected String resourceURI = null;
+	protected String parentURI = null;
+	protected String parentName = null;
 
-	protected static List<String> childrenNames = null;
-	protected static List<String> childrenURIs = null;
-	protected static List<String> childrenDescriptions = null;
-	protected static List<String> childrenMethods = null;
+	protected List<String> childrenNames = null;
+	protected List<String> childrenURIs = null;
+	protected List<String> childrenDescriptions = null;
+	protected List<String> childrenMethods = null;
 
-	protected static String getterName = null;
-	protected static String getterValue = null;
-	protected static String getterDescription = null;
+	protected String getterName = null;
+	protected String getterValue = null;
+	protected String getterDescription = null;
+	
+	protected String posterName = null;
+	protected String posterDescription = null;
+	protected String posterType = null;
+	protected String posterArgumentType = null;
+	protected String posterPresentationType = null;
+	
+	protected String putterName = null;
+	protected String putterDescription = null;
+	protected String putterType = null;
+	protected String putterArgumentType = null;
+	protected String putterPresentationType = null;
+	
+	protected String deleterName = null;
+	protected String deleterDescription = null;
 
-	// The URI of posters is "their" resourceURI
-	protected static String posterName = null;
-	protected static String posterDescription = null;
-	protected static String posterType = null;
-	protected static String posterArgumentType = null;
-	protected static String posterPresentationType = null;
-
-	protected static String infoString = null;
+	protected String infoString = null;
 	
 	protected ServletRequest request = null;
 	protected UriInfo uri = null;
 	
 	// Allowed method flags
-	protected static boolean allowGet = true;
-	protected static boolean allowPost = false;
-	protected static boolean allowPut = false;
-	protected static boolean allowDelete = false;
+	protected boolean allowGet = true;
+	protected boolean allowPost = false;
+	protected boolean allowPut = false;
+	protected boolean allowDelete = false;
 
 	// Paths to external resources
 	public static String CONFIGFILE_PATH = null;
@@ -109,6 +119,8 @@ public abstract class BaseResource {
 		childrenCount = 0;
 		getterExists = false;
 		posterExists = false;
+		putterExists = false;
+		deleterExists = false;
 
 		childrenNames = null;
 		childrenURIs = null;
@@ -137,7 +149,7 @@ public abstract class BaseResource {
 	protected String getRepresentationHTML() {
 		String representationBuildUp = "";
 		try {
-			representationBuildUp = readFileAsString(JerseyConstants.RESOURCES_HTML_PATH + "/" + "main");
+			representationBuildUp = readFileAsString(JerseyConstants.RESOURCES_HTML_PATH + "/" + this.getClass().getSimpleName() + ".html");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -280,13 +292,11 @@ public abstract class BaseResource {
 			}
 			resourceObject.put("children", childrenArray);
 
-			JSONArray getterArray = new JSONArray();
 			JSONObject getterObject = new JSONObject();
 			getterObject.put("name", getterName);
 			getterObject.put("value", getterValue);
 			getterObject.put("description", getterDescription);
-			getterArray.put(getterObject);
-			resourceObject.put("getters", getterArray);
+			resourceObject.put("getter", getterObject);
 
 			if (posterExists) {
 				JSONObject posterObject = new JSONObject();
@@ -296,7 +306,23 @@ public abstract class BaseResource {
 				posterObject.put("showtype", posterPresentationType);
 				resourceObject.put("poster", posterObject);
 			}
-
+			
+			if (putterExists) {
+				JSONObject putterObject = new JSONObject();
+				putterObject.put("name", putterName);
+				putterObject.put("description", putterDescription);
+				putterObject.put("argtype", putterArgumentType);
+				putterObject.put("showtype", putterPresentationType);
+				resourceObject.put("putter", putterObject);
+			}
+			
+			if (deleterExists) {
+				JSONObject deleterObject = new JSONObject();
+				deleterObject.put("name", deleterName);
+				deleterObject.put("description", deleterDescription);
+				resourceObject.put("deleter", deleterObject);
+			}
+			
 			jsonObject.put("resource", resourceObject);
 
 			return jsonObject.toString();
@@ -344,7 +370,6 @@ public abstract class BaseResource {
 		
 		// Attach the current resource's values
 		if(getterExists) {
-			org.jdom.Element resourceContentsElement = new org.jdom.Element("getters");
 			org.jdom.Element contentsElement = new org.jdom.Element("getter");
 			
 			org.jdom.Element contentNameElement = new org.jdom.Element("name");
@@ -359,14 +384,11 @@ public abstract class BaseResource {
 			contentsElement.addContent(contentValueElement);
 			contentsElement.addContent(contentDescriptionElement);
 			
-			resourceContentsElement.addContent(contentsElement);
-			
-			r.addContent(resourceContentsElement);
+			r.addContent(contentsElement);
 		}
 		
 		// Attach the current resource's posters
 		if (posterExists) {
-			org.jdom.Element resourcePostersElement = new org.jdom.Element("posters");
 			org.jdom.Element posterElement = new org.jdom.Element("poster");
 			
 			org.jdom.Element contentNameElement = new org.jdom.Element("name");
@@ -378,9 +400,7 @@ public abstract class BaseResource {
 			posterElement.addContent(contentNameElement);
 			posterElement.addContent(contentDescriptionElement);
 			
-			resourcePostersElement.addContent(posterElement);
-			
-			r.addContent(resourcePostersElement);
+			r.addContent(posterElement);
 		}
 		
 		// Attach the current resource's children
@@ -434,11 +454,14 @@ public abstract class BaseResource {
 	 * 
 	 */
 	protected void parseNestedResourceInformation(ServletRequest request) {
-		// get the root element and parse it
+		
+		// Get the Configuration File
 		documentModel = getConfigurationFromXML();
+		
 		if (documentModel.getElementsByTagName(this.getClass().getSimpleName()) != null) {
-			Element docElement;
-			docElement = (Element) (documentModel.getElementsByTagName(this.getClass().getSimpleName()).item(0));
+			
+			// Get the Document Element <ClassName> ... </ClassName>
+			Element docElement = (Element) (documentModel.getElementsByTagName(this.getClass().getSimpleName()).item(0));
 
 			// Get Resource Name
 			NodeList nameNodes = docElement.getElementsByTagName("resourceName");
@@ -466,23 +489,22 @@ public abstract class BaseResource {
 			} else {
 				log.severe("XML parsing exception: wrong number of resourceURI nodes");
 			}
-
-			Node cursor;
+			
+			// Get Parent Node
+			Node cursor = docElement.getParentNode();
 			Boolean hasFound = false;
-			cursor = docElement.getParentNode();
-
+			
+			// Cursor is NULL when reaching the "parent" of the root resource
+			// HasFound is true when the parent of the current node has been found
 			while (cursor != null && !hasFound) {
 				NodeList children = cursor.getChildNodes();
 				for (int i = 0; i < children.getLength(); i++) {
-
-					// log.info("Node " + children.item(i).getNodeName());
-
-					// Found, but finish current object
+					
+					// Find URI and Name of Parent
 					if (children.item(i).getNodeName().equalsIgnoreCase("resourceURI")) {
 						parentURI = hostIdentifier + replaceSubstitutes(children.item(i).getTextContent().trim());
 						hasFound = true;
 					}
-
 					if (children.item(i).getNodeName().equalsIgnoreCase("resourceName")) {
 						parentName = replaceSubstitutes(children.item(i).getTextContent().trim());
 						hasFound = true;
@@ -491,33 +513,36 @@ public abstract class BaseResource {
 				cursor = cursor.getParentNode();
 			}
 
-			// Get Children of current node
-			NodeList subNodes;
+			// Get children of current node
+			NodeList subNodes = docElement.getChildNodes();
 			NodeList childNodes = null;
-			subNodes = docElement.getChildNodes();
-
+			
+			// Find the subnode <children>, subnodes of the node <children> are the child resources
 			for (int i = 0; i < subNodes.getLength(); i++) {
 				if (subNodes.item(i).getNodeName().equalsIgnoreCase("children")) {
 					childNodes = subNodes.item(i).getChildNodes();
 				}
 			}
-
+			
+			// Fetch data of the child nodes
 			childrenNames = new ArrayList<String>();
 			childrenURIs = new ArrayList<String>();
 			childrenDescriptions = new ArrayList<String>();
 
 			int childNumber = 0;
-
 			if (childNodes != null) {
+				// Go through all subnodes of <children>...</children>
 				for (int j = 0; j < childNodes.getLength(); j++) {
+					
+					// The child list has the following structure <children><child>...</child><child>...</child></children>
 					if (childNodes.item(j).getNodeName().equalsIgnoreCase("child")) {
+						
+						// Get the type attribute of <child>
 						if (childNodes.item(j).getAttributes().getNamedItem("type") != null) {
+							
+							// If it is a collection, load it using Java Refection
 							if (childNodes.item(j).getAttributes().getNamedItem("type").getTextContent().equalsIgnoreCase("collection")) {
-								// log.info("A collection of children!");
-
-								// JAVA Reflection: Classname and Method name
-								// are derived at runtime
-
+								
 								// Get features of that child
 								String originalMethod = null;
 								String originalDescription = null;
@@ -589,8 +614,7 @@ public abstract class BaseResource {
 									e.printStackTrace();
 								}
 
-								// We have to add some resources to the child
-								// list
+								// We have to add some resources to the child list
 								int k = 0;
 								for (String resourceName : currentResources) {
 									childrenNames.add(originalName + " (" + resourceName + ")");
@@ -601,7 +625,8 @@ public abstract class BaseResource {
 								}
 							}
 						} else {
-							// Get features of that child
+							// It is not a collection
+							
 							NodeList childElements = childNodes.item(j).getChildNodes();
 
 							for (int k = 0; k < childElements.getLength(); k++) {
@@ -629,98 +654,115 @@ public abstract class BaseResource {
 					}
 				}
 			}
-
+			
 			childrenCount = childrenNames.size();
 
-			// Get Getters of current node
-			childNodes = null;
+			// Get Getter of current node
+			Node getterNode = null;
+			subNodes = docElement.getChildNodes();
+			
+			for (int i = 0; i < subNodes.getLength(); i++) {
+				if (subNodes.item(i).getNodeName().equalsIgnoreCase("getter") && subNodes.item(i).hasChildNodes()) {
+					getterNode = subNodes.item(i);
+					getterExists = true;
+					break;
+				}
+			}
+
+			if (getterExists) {
+				NodeList childFeats = getterNode.getChildNodes();
+				for (int i = 0; i < childFeats.getLength(); i++) {
+					if (childFeats.item(i).getNodeName().equalsIgnoreCase("#text"))
+						continue;
+					if (childFeats.item(i).getNodeName().equalsIgnoreCase("getterName")) {
+						getterName = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("getterDescription")) {
+						getterDescription = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					}
+				}
+			}
+
+			// Get poster of current node
+			Node posterNode = null;
 			subNodes = docElement.getChildNodes();
 
 			for (int i = 0; i < subNodes.getLength(); i++) {
-				if (subNodes.item(i).getNodeName().equalsIgnoreCase("getters")) {
-					childNodes = subNodes.item(i).getChildNodes();
-					for (int j = 0; j < childNodes.getLength(); j++) {
-						if (childNodes.item(j).getNodeName().equalsIgnoreCase("getter")) {
-							getterExists = true;
-							break;
-						}
-					}
+				if (subNodes.item(i).getNodeName().equalsIgnoreCase("poster") && subNodes.item(i).hasChildNodes()) {
+					posterNode = subNodes.item(i);
+					posterExists = true;
+					break;
 				}
 			}
 
-			childNumber = 0;
-
-			if (childNodes != null) {
-				for (int j = 0; j < childNodes.getLength(); j++) {
-					if (childNodes.item(j).getNodeName().equalsIgnoreCase("getter")) {
-						// Get features of that child
-						NodeList childFeats = childNodes.item(j).getChildNodes();
-
-						for (int i = 0; i < childFeats.getLength(); i++) {
-							if (childFeats.item(i).getNodeName().equalsIgnoreCase("#text"))
-								continue;
-							if (childFeats.item(i).getNodeName().equalsIgnoreCase("getterName")) {
-								getterName = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("getterDescription")) {
-								getterDescription = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							}
-						}
-						childNumber++;
+			if (posterExists) {
+				NodeList childFeats = posterNode.getChildNodes();
+				for (int i = 0; i < childFeats.getLength(); i++) {
+					if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterName")) {
+						posterName = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterDescription")) {
+						posterDescription = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterType")) {
+						posterType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterArgType")) {
+						posterArgumentType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterShowType")) {
+						posterPresentationType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
 					}
 				}
 			}
-
-			// Get Posters of current node
-			childNodes = null;
+			
+			
+			// Get putter of current node
+			Node putterNode = null;
 			subNodes = docElement.getChildNodes();
 
 			for (int i = 0; i < subNodes.getLength(); i++) {
-				if (subNodes.item(i).getNodeName().equalsIgnoreCase("posters")) {
-					childNodes = subNodes.item(i).getChildNodes();
-					for (int j = 0; j < childNodes.getLength(); j++) {
-						if (childNodes.item(j).getNodeName().equalsIgnoreCase("poster")) {
-							posterExists = true;
-							break;
-						}
-					}
+				if (subNodes.item(i).getNodeName().equalsIgnoreCase("putter") && subNodes.item(i).hasChildNodes()) {
+					putterNode = subNodes.item(i);
+					putterExists = true;
+					break;
 				}
 			}
 
-			childNumber = 0;
-
-			if (childNodes != null) {
-				for (int j = 0; j < childNodes.getLength(); j++) {
-					if (childNodes.item(j).getNodeName().equalsIgnoreCase("poster")) {
-						// Get features of that child
-						NodeList childFeats = childNodes.item(j).getChildNodes();
-
-						for (int i = 0; i < childFeats.getLength(); i++) {
-							if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterName")) {
-								posterName = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterDescription")) {
-								posterDescription = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterType")) {
-								posterType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterArgtype")) {
-								posterArgumentType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("posterShowType")) {
-								posterPresentationType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
-							}
-						}
-						childNumber++;
+			if (putterExists) {
+				NodeList childFeats = putterNode.getChildNodes();
+				for (int i = 0; i < childFeats.getLength(); i++) {
+					if (childFeats.item(i).getNodeName().equalsIgnoreCase("putterName")) {
+						putterName = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("putterDescription")) {
+						putterDescription = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("putterType")) {
+						putterType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("putterArgType")) {
+						putterArgumentType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("putterShowType")) {
+						putterPresentationType = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
 					}
 				}
 			}
+			
+			// Get deleter of current node
+			Node deleterNode = null;
+			subNodes = docElement.getChildNodes();
 
-			log.info("ResName: " + resourceName);
-			log.info("ResURI: " + resourceURI);
-			log.info("ParentURI: " + parentURI);
-			log.info("Childcount: " + childrenCount);
-			for (int i = 0; i < childrenCount; i++) {
-				log.info("\t" + childrenNames.get(i) + ", " + childrenURIs.get(i) + ", " + childrenDescriptions.get(i));
+			for (int i = 0; i < subNodes.getLength(); i++) {
+				if (subNodes.item(i).getNodeName().equalsIgnoreCase("deleter") && subNodes.item(i).hasChildNodes()) {
+					deleterNode = subNodes.item(i);
+					deleterExists = true;
+					break;
+				}
 			}
 
-			log.info("\tGetter name \"" + getterName + "\", description \"" + getterDescription + "\"");
+			if (deleterExists) {
+				NodeList childFeats = deleterNode.getChildNodes();
+				for (int i = 0; i < childFeats.getLength(); i++) {
+					if (childFeats.item(i).getNodeName().equalsIgnoreCase("deleterName")) {
+						deleterName = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					} else if (childFeats.item(i).getNodeName().equalsIgnoreCase("deleterDescription")) {
+						deleterDescription = replaceSubstitutes(childFeats.item(i).getTextContent().trim());
+					}
+				}
+			}
 		}
 	}
 	
