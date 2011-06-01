@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+	<head>
+		<title>Web of Things - Resource {{ResourceName}}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="/webresources/stylesheets/main.css"/> 
+		<script type="text/JavaScript">
+		<!--
+		function timedRefresh(timeoutPeriod) {
+			setTimeout("location.reload(true);",timeoutPeriod);
+		}
+		//   -->
+</script>
+	
+	<body onload="JavaScript:timedRefresh(5000);">
+		<h1>Web of Things - Resource {{ResourceName}}</h1>
+		{{GetterList}}
+		<p class = "informationcontainer">
+			<ul class = "std"> 
+				<li class = "home"><a href="{{HomeUrl}}">Home</a></li> 
+				<li class = "parent"><a href="{{ParentUrl}}">Parent</a></li> 
+				<li class = "refresh"><a href="">Refresh</a></li> 
+			</ul>
+			
+			
+		</p>
+	</body>
+</html>
+
+
+

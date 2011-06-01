@@ -53,7 +53,8 @@ class GameServer extends Actor{
 			self.reply("Webtest seems to work")
 
 		case WebGetRoot() =>
-			self.reply("Welcome!")
+//			var reply = new _root_.messages.Reply
+			self.reply("greetings")
 
 		case WebLoadTournamentCollection() =>
 			var result: String = ""

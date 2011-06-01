@@ -171,7 +171,7 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 			self.reply(result)
 
 		case WebGetCurrentTurn() =>
-			var result: String = turns("turn" + turnNumber.toString() )
+			var result: CurrentTurnReply = new CurrentTurnReply(board.clone, null)
 			self.reply(result)
 			
 
