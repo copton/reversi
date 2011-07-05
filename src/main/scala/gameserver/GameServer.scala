@@ -3,21 +3,21 @@ package gameserver
 import akka.actor._
 import scala.collection.mutable.HashMap
 import java.lang.Thread
+import java.util.ArrayList
 import tournament._
 import tournament.plan._
-import gameserver.ports.PortService
+import resourceadministrator.ResourceAdministrator
 import messages._
 
 class GameServer extends Actor{
-	var portService: ActorRef = null
+	var resourceAdministrator: ActorRef = null
 	var tournaments: HashMap[String, (ActorRef, Boolean)] = new HashMap
 	var remoteNode: akka.remoteinterface.RemoteServerModule = null
 	val remoteNodePort: Int = 9999
 
 	override def preStart() {
-		portService = Actor.actorOf(new PortService(10000))
-		portService.start
-		log.info("GameServer: portService started")
+		resourceAdministrator = createResourceAdministrator(10000)
+		log.info("GameServer: resourceAdministrator started")
 		remoteNode = Actor.remote.start("localhost", remoteNodePort)
 		
 	}
@@ -30,43 +30,51 @@ class GameServer extends Actor{
 //			startFakeTournament(remoteNodePort, remoteNode, "fakeTournament2")
 //			log.info("gameServer: fakeTournament2 started for testing purposes.")
 
-			startTestTournament(remoteNode)
+			prepareTestTournament(remoteNode)
 			log.info("GameServer: testTournament1 started")
-			startTestTournament(remoteNode)
+			prepareTestTournament(remoteNode)
 			log.info("GameServer: testTournament2 started")
 
 
 
 		case RequestPorts(amount: Int) =>
 			log.info("got port request. forwarding...")
-			portService.forward(RequestPorts(amount: Int))
+			resourceAdministrator.forward(RequestPorts(amount: Int))
 
 		case ReleasePorts(portList: List[Int]) =>
 			log.info("got ports to release. forwarding...")
-			portService.forward(ReleasePorts(portList: List[Int]))
-
-		case RequestTag() =>
-			log.info("got a tag request. forwarding...")
-			portService.forward(RequestTag())
+			resourceAdministrator.forward(ReleasePorts(portList: List[Int]))
 	
 		case WebTest() =>
 			self.reply("Webtest seems to work")
 
 		case WebGetRoot() =>
-//			var reply = new _root_.messages.Reply
-			self.reply("greetings")
+			var reply = new _root_.messages.RootReply
+			self.reply(reply)
 
 		case WebLoadTournamentCollection() =>
-			var result: String = ""
-			tournaments foreach ( (t1) => result = result + t1._1 + "\n")
+			var result = new ArrayList[String]
+			tournaments foreach ( (t1) => result.add(t1._1) )
 			self.reply(result)
 
 		case WebGetTournaments() =>
-			self.reply("Amount of Tournaments: " + tournaments.size)
+			val result = new _root_.messages.TournamentsReply(tournaments.size.toString)
+			self.reply(result)
 
 		case WebRequestActor(actorName: String) =>
-			self.reply(Actor.remote.actorFor(actorName, "localhost", remoteNodePort))
+//			self.reply(Actor.remote.actorFor(actorName, "localhost", remoteNodePort))
+			self.reply((Actor.registry.actorsFor(actorName))(0))
 
+		case WebPostForTournament(tournamentName: String, postArgument: String) =>
+			val target: ActorRef = (Actor.registry.actorsFor("/tournaments/" + tournamentName))(0)
+
+			postArgument match {
+				case "start" =>
+					target ! _root_.messages.Start()
+				case "delete" =>
+					target ! _root_.messages.Stop()
+			}
+			
 
 
 		case _ => 
@@ -76,14 +84,13 @@ class GameServer extends Actor{
 			
 	}
 
-	def startTestTournament(remoteNode: akka.remoteinterface.RemoteServerModule): Unit = {
+	def prepareTestTournament(remoteNode: akka.remoteinterface.RemoteServerModule): Unit = {
   		val plan = new DummyPlan
-		val tournamentName = (portService !! _root_.messages.RequestTournamentName()).getOrElse(throw new RuntimeException("TIMEOUT")).asInstanceOf[String]
+		val tournamentName = (resourceAdministrator !! _root_.messages.RequestTournamentName()).getOrElse(throw new RuntimeException("TIMEOUT")).asInstanceOf[String]
 		val tournament = Actor.actorOf(new Tournament(plan, self, remoteNode, "/tournaments/"+tournamentName.toString()))
 		log.info("GameServer: created a new tournament with the name " + tournamentName)
 		tournaments += tournamentName.asInstanceOf[String] -> (tournament, false)
 		tournament.start
-		tournament ! _root_.messages.Start()
 
 	}
 	
@@ -92,6 +99,13 @@ class GameServer extends Actor{
 		val fakeTournament = Actor.actorOf(new testStuff.TestFakeTournament(port, testServer, name))
 		fakeTournament.start
 		fakeTournament ! _root_.testStuff.TestStart()
+	}
+
+	def createResourceAdministrator(basePort: Int): ActorRef = {
+		var resourceAdministrator = Actor.actorOf(new ResourceAdministrator(basePort))
+		resourceAdministrator.setId("resourceAdministrator")
+		resourceAdministrator.start
+		return resourceAdministrator
 	}
 
 
@@ -112,8 +126,9 @@ object RunGameServer {
 		val gameServer = Actor.actorOf(new GameServer)
 		gameServer.start
 
-		val gamePort = (gameServer !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("RunGameServer: TIMEOUT"))
-		println("to test the portservice: the port I requested is: " + (gamePort match {case l: List[Int] => l(0) }).toString  )
+		val resourceAdmin = (Actor.registry.actorsFor("resourceAdministrator"))(0)
+		val gamePort = (resourceAdmin !! _root_.messages.RequestPorts(1)).getOrElse(throw new RuntimeException("RunGameServer: TIMEOUT"))
+		println("to test the resourceAdministrator: the port I requested is: " + (gamePort match {case l: List[Int] => l(0) }).toString  )
 		
 		var WebServer = new WebServerThread(gameServer)
 		WebServer.start()

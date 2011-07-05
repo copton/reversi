@@ -12,6 +12,9 @@ class GameBoard extends reversi.GameBoard with Rules with ArrayBoard with Defaul
   }
 
   override def clone(): player.GameBoard = {
-	super.clone().asInstanceOf[player.GameBoard]
+//	super.clone().asInstanceOf[player.GameBoard]
+	val newBoard = new GameBoard
+	newBoard.copyFrom(this)
+	newBoard
   }
 }

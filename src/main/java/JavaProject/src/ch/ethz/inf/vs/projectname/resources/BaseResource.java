@@ -220,7 +220,7 @@ public abstract class BaseResource {
 		log.info(getterName);
 		log.info(getterValue);
 
-		String returnString = "<li class = \"getter\">" + getterName + ": <span class=\"getterValue\">" + getterValue + "</span>";
+		String returnString = "<li class = \"getter\">" /*+ getterName */ + ": <span class=\"getterValue\">" + getterValue + "</span>";
 
 		if (!(getterDescription == null) && !(getterDescription.equalsIgnoreCase(""))) {
 			returnString += " <span class = \"descriptor\">(" + getterDescription + ")</span>";

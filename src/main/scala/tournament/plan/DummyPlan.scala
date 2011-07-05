@@ -14,11 +14,11 @@ import messages._
 class DummyPlan extends Plan {
 
 
-	var finishedGames: List[ActorRef] = Nil
+	var finishedGames: List[DummyGameResult] = Nil
 	var count: Int = 0
 
-	def deliverFinishedGame(game: ActorRef): Unit = {
-		finishedGames = game::finishedGames
+	def deliverFinishedGame(game: GameResult): Unit = {
+		finishedGames = game.asInstanceOf[DummyGameResult]::finishedGames
 	
 	}
 

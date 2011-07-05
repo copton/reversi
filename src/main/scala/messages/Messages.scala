@@ -1,6 +1,7 @@
 package messages
 
 import akka.actor._
+import java.util.ArrayList
 import scala.collection.immutable.List
 import tournament.misc._
 import tournament.plan.TurnInfo
@@ -11,13 +12,13 @@ sealed trait Message
 //tournament
 	//from server
 	case class Start() extends Message
-	
+	case class Stop() extends Message
 	
 	//from game
-	case class GameFinished(game: ActorRef, portsToRelease: List[Int], namingNumber: String) extends Message
+	case class GameFinished(game: GameResult, portsToRelease: List[Int], namingNumber: String) extends Message
 
-	// Information about a requested turn
-	case class ReturnTurnInformation(info: TurnInfo) extends Message
+	//from ressourceAdministrator
+	case class PermissionGranted() extends Message
 
 	//from webserver
 	case class WebLoadGameCollection() extends Message
@@ -31,13 +32,10 @@ sealed trait Message
 	case class KillPlayer() extends Message
 
 	//from RunPlayer
-	case class TestStart() extends Message
+	case class PlayerStart() extends Message // Sets player in Motion
 
 
 //gameserver
-	//from Tournament
-	case class RequestPorts(amount: Int) extends Message
-	case class ReleasePorts(portList: List[Int]) extends Message
 
 	//from starting mechanism
 	case class ServerStart() extends Message
@@ -47,26 +45,29 @@ sealed trait Message
 	case class WebGetRoot() extends Message
 	case class WebLoadTournamentCollection() extends Message
 	case class WebGetTournaments() extends Message
+	case class WebPostForTournament(tournamentName: String, postArgument: String) extends Message
 	case class WebRequestActor(actorName: String) extends Message
 
 
 
 
-//portservice
-	//from requester
-	case class RequestTournamentName() extends Message
-	case class RequestTag() extends Message
+//resourceAdministrator
 
+	//from requester
+	case class RequestTournamentName() extends Message //TODO einer muss raus
+	case class RequestPorts(amount: Int) extends Message
+	case class ReleasePorts(portList: List[Int]) extends Message
+	case class RequestPermission() extends Message
+	case class ReleasePermission() extends Message
 
 //game
-	// from Tournement
+	// from Tournament
 	case class StartGame() extends Message	//Startmessage
-	case class GetTurnInformation(turnNumber: Int) extends Message	//requests information about turn number 'turnNumber'
 	
 	// from Player
 	case class Started(port: Int) extends Message
 	case class PlayerReady(port: Int) extends Message
-	case class ReportNextMove(port: Int, position: Option[reversi.Position]) extends Message
+	case class ReportNextMove(port: Int, position: Option[reversi.Position], playerLog: ArrayList[String]) extends Message
 
 	// from PlayerProc
 	case class PlayerExit(player: Player, exitCode: Int)
@@ -75,4 +76,6 @@ sealed trait Message
 	case class WebLoadTurnCollection() extends Message
 	case class WebGetGame() extends Message
 	case class WebGetTurn(turn: String) extends Message
-	case class WebGetCurrentTurn() extends Message
+	case class WebGetCurrentTurn(lastTurn: String) extends Message
+	case class WebLoadPlayerCollection() extends Message
+	case class WebGetPlayer(player: String) extends Message

@@ -6,7 +6,17 @@
 		<link rel="stylesheet" type="text/css" href="/webresources/stylesheets/main.css"/> 
 		<script type="text/JavaScript">
 		<!--
+		function setCookie(c_name,value,exdays) {
+			var exdate=new Date();
+			exdate.setDate(exdate.getDate() + exdays);
+			var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+			document.cookie=c_name + "=" + c_value;
+		}
+
 		function timedRefresh(timeoutPeriod) {
+			var turnName = document.getElementById("turnName").innerHTML;
+			if(turnName == "") turnName = "empty"
+			setCookie("turn", turnName, 1);
 			setTimeout("location.reload(true);",timeoutPeriod);
 		}
 		//   -->

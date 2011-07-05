@@ -10,7 +10,7 @@ trait Plan {
 	/**
 	 * delivers the ActorRef of the finished game.
 	 **/	
-	def deliverFinishedGame(game: ActorRef): Unit
+	def deliverFinishedGame(game: GameResult): Unit
 
 	
 	/**

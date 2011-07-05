@@ -37,7 +37,7 @@ public class Turn extends BaseResource {
     
     @Override
 	public void handleGetters() {
-		getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()); // null
+		getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()).renderHtml(); // null
 
 	}
     
@@ -47,10 +47,28 @@ public class Turn extends BaseResource {
     public String handleGetHTML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()).renderHtml(); // null
 
         
         return getRepresentationHTML();
+    }
+
+@Override
+    protected String getterListItem() {
+	this.handleGetters();
+
+	log.info(getterName);
+	log.info(getterValue);
+
+	String returnString = "<div>" + getterValue + "</div>";
+
+	if (!(getterDescription == null) && !(getterDescription.equalsIgnoreCase(""))) {
+			returnString += " <span class = \"descriptor\">(" + getterDescription + ")</span>";
+	}
+
+	returnString += "</li>\n";
+
+	return returnString;
     }
     
  	// By default resources handle GET requests
@@ -59,7 +77,7 @@ public class Turn extends BaseResource {
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()); // null
+//        getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()); // null
 
         
         return getRepresentationJSON();
@@ -71,7 +89,7 @@ public class Turn extends BaseResource {
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()); // null
+  //      getterValue = ch.ethz.inf.vs.projectname.Handler.getTurn(getSource()); // null
 
         
         return getRepresentationXML();

@@ -2,6 +2,6 @@ package tournament.misc
 
 class DummyGameResult extends GameResult {
 
-	var board:String = null	
+	var board: player.GameBoard = null	
 
 }

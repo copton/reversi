@@ -37,7 +37,7 @@ public class Tournament extends BaseResource {
     
     @Override
 	public void handleGetters() {
-		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
+		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderHtml(); // null
 
 	}
     
@@ -47,7 +47,7 @@ public class Tournament extends BaseResource {
     public String handleGetHTML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderHtml(); // null
 
         
         return getRepresentationHTML();
@@ -59,7 +59,7 @@ public class Tournament extends BaseResource {
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
+//        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
 
         
         return getRepresentationJSON();
@@ -71,7 +71,7 @@ public class Tournament extends BaseResource {
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
+//        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
 
         
         return getRepresentationXML();
@@ -86,7 +86,29 @@ public class Tournament extends BaseResource {
 		ch.ethz.inf.vs.projectname.Handler.postTournament(getSource(), posterVar);
  
 		return getRepresentationHTML();
-	} 
+	}
+
+    
+
+	@Override
+	protected String getterListItem() {
+		this.handleGetters();
+
+		log.info(getterName);
+		log.info(getterValue);
+
+		getterValue = getterValue.replace("{{RessourceUri}}", resourceURI);
+		String returnString = "<li><div>" + getterValue + "</div>";
+
+		if (!(getterDescription == null) && !(getterDescription.equalsIgnoreCase(""))) {
+			returnString += " <span class = \"descriptor\">(" + getterDescription + ")</span>";
+		}
+
+		returnString += "</li>\n";
+
+		return returnString;
+	}
+
 	
 	@POST 
 	@Produces("application/json") 

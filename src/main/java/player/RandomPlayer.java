@@ -10,12 +10,14 @@ import reversi.GameBoard;
 public class RandomPlayer implements reversi.Player {
     private Color color;
     private Random rand;
-
+   
     public void initialize(Color color)
     {
         this.color = color;
         this.rand = new Random();
     }
+
+  
 
     public void nextMove(GameBoard board, Position lastMove, reversi.GameControler controler)
     {

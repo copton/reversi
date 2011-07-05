@@ -34,10 +34,11 @@ public class CurrentTurn extends BaseResource {
 		allowPut = false;
 		allowDelete = false;
 	}
-    
+	String asdfturn = "turn0";
+  
     @Override
 	public void handleGetters() {
-		getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource()).renderHtml(); // null
+//		getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource(), asdfturn).renderHtml(); // null
 
 	}
     
@@ -45,9 +46,17 @@ public class CurrentTurn extends BaseResource {
     @GET 
     @Produces("text/html")
     public String handleGetHTML(@Context HttpServletRequest request, @Context UriInfo uri) {
-        
+	String turn;
+        try {
+		turn = request.getCookies()[0].getValue();
+	} catch (java.lang.NullPointerException e) {
+		turn = "turn0";
+	}
+	asdfturn = turn;
+	System.out.println("the cookie containts: " + turn);
+
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource()).renderHtml(); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource(), turn).renderHtml(); // null
 
         
         return getRepresentationHTML();

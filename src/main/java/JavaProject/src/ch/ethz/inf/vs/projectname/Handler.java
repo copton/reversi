@@ -22,27 +22,23 @@ public class Handler {
 		return (ActorRef)o;
 	}
 
-	public static String getRoot(HashMap<String, Object> source) {
+	public static RootReply getRoot(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
 		Object o = JerseyMain.REVERSI.sendRequestReply(new WebGetRoot());
-		return ((String)o);
+		return ((RootReply)o);
 	}
 
 	public static List<String> loadTournament(HashMap<String, Object> source) {
 		System.out.println("A reflexive call has been executed on the dynamic resource \"" + source + "\"");
 		Object o = JerseyMain.REVERSI.sendRequestReply(new WebLoadTournamentCollection());
-		StringTokenizer st = new StringTokenizer( (String)o, "\n");	
-		List<String> returnList = new ArrayList<String>();
-		while(st.hasMoreTokens()) {
-			returnList.add(st.nextToken());
-		}
-		return returnList;
+
+		return (List<String>)o;
 	 }
 
-	public static String getTournaments(HashMap<String, Object> source) {
+	public static TournamentsReply getTournaments(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
 		Object o = JerseyMain.REVERSI.sendRequestReply(new WebGetTournaments());
-		return (String)o;
+		return (TournamentsReply)o;
 	}
 	//TODO
 	public static void postTournaments(HashMap<String, Object> source, Object posterVar) {
@@ -62,15 +58,11 @@ public class Handler {
 		ActorRef actor = actorRefRequester("/tournaments/" + argument);
 
 		Object o = actor.sendRequestReply(new WebLoadGameCollection());
-		StringTokenizer st = new StringTokenizer( (String)o, "\n");	
-		List<String> returnList = new ArrayList<String>();
-		while(st.hasMoreTokens()) {
-			returnList.add(st.nextToken());
-		}
-		return returnList;
+		
+		return (List<String>)o;
 	 }
 
-	public static String getTournament(HashMap<String, Object> source) {
+	public static TournamentReply getTournament(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
 		
 		String argument = source.get("tournament").toString();
@@ -79,23 +71,35 @@ public class Handler {
 		ActorRef actor = actorRefRequester("/tournaments/" + argument);
 		Object o = actor.sendRequestReply(new WebGetTournament());
 		
-		return (String)o;
+		return (TournamentReply)o;
 	}
-	//TODO
+	
 	public static void postTournament(HashMap<String, Object> source, Object posterVar) {
 		System.out.println("A POST was called on the dynamic resource with data: \"" + posterVar + "\"");
-		
+
+		String argument = source.get("tournament").toString();
+		argument = argument.substring(1, argument.length()-1);
+
+		JerseyMain.REVERSI.sendOneWay(new WebPostForTournament(argument, posterVar.toString()));
+
 		for(String key : source.keySet()) System.out.println("\t\" + key + \": " + source.get(key));
 	}
 	//TODO
 	public static List<String> loadPlayer(HashMap<String, Object> source) {
 		
 		System.out.println("A reflexive call has been executed on the dynamic resource \"" + source + "\"");
-		List<String> returnList = new ArrayList<String>();
-		returnList.add("Subresource1");
-		returnList.add("Subresource2");
-		returnList.add("Subresource3");
-		return returnList;
+	
+		String argument = source.get("tournament").toString();
+		argument = argument.substring(1, argument.length()-1);
+
+		String argument2 = source.get("game").toString();
+		argument2 = argument2.substring(1, argument2.length()-1);
+
+		ActorRef actor = actorRefRequester("/tournaments/" + argument + "/" + argument2);
+
+		Object o = actor.sendRequestReply(new WebLoadPlayerCollection());
+		
+		return (List<String>)o;
 	 }
 
 	public static String getGame(HashMap<String, Object> source) {		
@@ -112,14 +116,27 @@ public class Handler {
 		
 		return (String)o;
 	}
-	//TODO
-	public static String getPlayer(HashMap<String, Object> source) {
+
+	public static PlayerReply getPlayer(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
 		
-		return "Hello World!";
+		String argument = source.get("tournament").toString();
+		argument = argument.substring(1, argument.length()-1);
+
+		String argument2 = source.get("game").toString();
+		argument2 = argument2.substring(1, argument2.length()-1);
+
+		String argument3 = source.get("player").toString();
+		argument3 = argument3.substring(1, argument3.length()-1);
+
+		ActorRef actor = actorRefRequester("/tournaments/" + argument + "/" + argument2);
+
+		Object o = actor.sendRequestReply(new WebGetPlayer(argument3));
+
+		return (PlayerReply)o;
 	}
 
-	public static CurrentTurnReply getCurrentTurn(HashMap<String, Object> source) {
+	public static CurrentTurnReply getCurrentTurn(HashMap<String, Object> source, String currentTurn) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
 
 		String argument = source.get("tournament").toString();
@@ -129,18 +146,25 @@ public class Handler {
 		argument2 = argument2.substring(1, argument2.length()-1);		
 
 		ActorRef actor = actorRefRequester("/tournaments/" + argument +"/"+ argument2);
-		Object o = actor.sendRequestReply(new WebGetCurrentTurn());
+		Object o = actor.sendRequestReply(new WebGetCurrentTurn(currentTurn));
 		return (CurrentTurnReply)o;
 	}
-	//TODO
+
 	public static List<String> loadTurn(HashMap<String, Object> source) {
 		
 		System.out.println("A reflexive call has been executed on the dynamic resource \"" + source + "\"");
-		List<String> returnList = new ArrayList<String>();
-		returnList.add("Subresource1");
-		returnList.add("Subresource2");
-		returnList.add("Subresource3");
-		return returnList;
+
+		String argument = source.get("tournament").toString();
+		argument = argument.substring(1, argument.length()-1);
+
+		String argument2 = source.get("game").toString();
+		argument2 = argument2.substring(1, argument2.length()-1);
+
+		ActorRef actor = actorRefRequester("/tournaments/" + argument + "/" + argument2);
+
+		Object o = actor.sendRequestReply(new WebLoadTurnCollection());
+		
+		return (List<String>)o;
 	 }
 	//TODO
 	public static String getTurns(HashMap<String, Object> source) {
@@ -149,10 +173,23 @@ public class Handler {
 		return "Hello World!";
 	}
 	//TODO
-	public static String getTurn(HashMap<String, Object> source) {
+	public static TurnReply getTurn(HashMap<String, Object> source) {
 		System.out.println("A GET was called on the dynamic resource \"" + source + "\"");
 		
-		return "Hello World!";
+		String argument = source.get("tournament").toString();
+		argument = argument.substring(1, argument.length()-1);
+
+		String argument2 = source.get("game").toString();
+		argument2 = argument2.substring(1, argument2.length()-1);
+
+		String argument3 = source.get("turn").toString();
+		argument3 = argument3.substring(1, argument3.length()-1);
+
+		ActorRef actor = actorRefRequester("/tournaments/" + argument + "/" + argument2);
+
+		Object o = actor.sendRequestReply(new WebGetTurn(argument3));
+
+		return (TurnReply)o;
 	}
 
 	

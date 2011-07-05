@@ -16,24 +16,20 @@
 				<li class = "refresh"><a href="">Refresh</a></li> 
 			</ul>
 			
-			{{ChildList}}
+			
 			{{GetterList}}
+			{{ChildList}}
 			{{PosterList}}
 			{{InfoList}}
 		</p>
 		<div>
-			<form name="input" action="/tournaments" method="post">
-				<input class="posterSubmit" value="Start" type="submit"/> 
-				<input type="hidden" value = "start" name = "value"/>
+			<form name="input" action="/tournaments" method="post" enctype="multipart/form-data">
+				<input class="posterSubmit" value="Upload" type="submit" name = "value"/>
+				<input type="file" name="value" size="40"> 
 			</form>
-			<form name="input" action="/tournaments" method="post">
-				<input class="posterSubmit" value="Stop" type="submit"/> 
-				<input type="hidden" value = "stop" name = "value"/>
-			</form>
-			<form name="input" action="/tournaments" method="post">
-				<input class="posterSubmit" value="Delete" type="submit"/> 
-				<input type="hidden" value = "delete" name = "value"/>
-			</form>
+			
 		</div>
 	</body>
 </html>
+
+
