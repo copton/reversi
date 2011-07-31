@@ -6,29 +6,57 @@ import game.Player
 
 abstract class BaseReply extends Renderer
 
+class FourZeroFourReply extends BaseReply {
+	def renderHtml(): String = {
+		var result: String = "404. Resource does not exist"
+		return result		
+	}
+
+	 def renderJson(): String = { null }
+
+	 def renderXml(): String = {null}
+}
+
+
 class RootReply extends BaseReply {
 
-	def renderHtml(): String = {
+	 def renderHtml(): String = {
 		var result: String = "Welcome to Tournament Server"
 		return result		
 	}
 
-	def renderJson(): String = { null }
+	 def renderJson(): String = { null }
 
-	def renderXml(): String = {null}
+	 def renderXml(): String = {null}
+
+}
+
+class GameReply(val winner: String) extends BaseReply {
+	 def renderHtml(): String = {
+		var result: String = "<div>" + winner + "</div>"
+		return result		
+	}
+
+	 def renderJson(): String = { null }
+
+	 def renderXml(): String = {null}
 
 }
 
 class TournamentsReply(val amountOfTournaments: String) extends BaseReply {
 
-	def renderHtml(): String = {
+	 def renderHtml(): String = {
 		var result: String = "Tournaments on the Server: " + amountOfTournaments
 		return result		
 	}
 
-	def renderJson(): String = { null }
+	 def renderJson(): String = { null }
 
-	def renderXml(): String = {null}
+	 def renderXml(): String = {
+		val s: StringBuffer = new StringBuffer
+		s.append("<tournaments>\n")
+		"adsf"
+	}
 
 }
 
@@ -36,9 +64,9 @@ class TournamentsReply(val amountOfTournaments: String) extends BaseReply {
 
 
 
-class TournamentReply(var tournamentName: String, var status: String, var amountOfFinishedGames: Int) extends BaseReply {
+class TournamentReply(var tournamentName: String, var status: String, var amountOfFinishedGames: Int, tournamentInfo: _root_.tournament.plan.TournamentInfo) extends BaseReply {
 
-	def renderHtml(): String = {
+	 def renderHtml(): String = {
 		val s: StringBuffer = new StringBuffer
 		s.append("<div>\n")
 		s.append("<table>\n")
@@ -58,63 +86,71 @@ class TournamentReply(var tournamentName: String, var status: String, var amount
 		s.append("<td>\n"); s.append(amountOfFinishedGames.toString); s.append("</td>\n")
 		s.append("</tr>\n")
 		
-		s.append("</table></div>\n")		
+		s.append("</table></div>\n")
+
+		var iterator = tournamentInfo.getInfo.iterator()
+		s.append("<ul>\n")
+		while(iterator.hasNext()) {
+			s.append("<li>" + iterator.next().toString + "</li>\n")
+		}
+		s.append("</ul>\n")	
 		
 		s.append("<div>\n")
 		s.append("<form name=\"input\" action=\"{{RessourceUri}}\" method=\"post\">\n<input class=\"posterSubmit\" value=\"Start\" type=\"submit\"/>\n<input type=\"hidden\" value = \"start\" name = \"value\"/>\n</form>\n")
-		s.append("<form name=\"input\" action=\"{{RessourceUri}}\" method=\"post\">\n<input class=\"posterSubmit\" value=\"Delete\" type=\"submit\"/>\n <input type=\"hidden\" value = \"delete\" name = \"value\"/>\n</form>\n")
+		s.append("<form name=\"input\" action=\"{{RessourceUri}}\" method=\"post\">\n<input class=\"posterSubmit\" value=\"Reset\" type=\"submit\"/>\n <input type=\"hidden\" value = \"delete\" name = \"value\"/>\n</form>\n")
 		s.append("</div>\n")
+
 
 		return s.toString		
 	}
 
-	def renderJson(): String = { null }
+	 def renderJson(): String = { null }
 
-	def renderXml(): String = {null}
+	 def renderXml(): String = {null}
 
 }
 
 class TurnReply(val turnNumber: Int, val nextExists: Boolean, val previousExists: Boolean, val gameName: String, var playField: _root_.game.GameboardSnapshot) extends BaseReply with boardDrawer {
 
-	def renderHtml(): String = {
+	 def renderHtml(): String = {
 
 		val s: StringBuffer = new StringBuffer
 		if(previousExists) {
 			s.append("<a href=\"" + gameName + "/turns/turn" + (turnNumber-1).toString + "\"> previous Turn</a>")
 		}
 		if(nextExists) {
-			s.append("<a href=\"" + gameName + "/turns/turn" + (turnNumber+1).toString + "\"> next Turn</a>")
+			s.append("<a href=\"" + gameName + "/turns/turn" + (turnNumber+1).toString + "\"> next Turn</a>\n")
 		}
-
-		s.append("<table><tr><td><img src=\"/webresources/images/32x32/red.gif\"/></td><td>" + playField.redStones.toString + "</td><td><img src=\"/webresources/images/32x32/green.gif\"/></td><td>" + playField.greenStones.toString+ "</td></tr></table>\n")
-		s.append(drawHtmlBoard(playField.playField))
+		s.append("<br/>\n")
+		s.append(drawHtmlBoard(playField.playField, playField.redStones.toString, playField.greenStones.toString))
 		return s.toString
 	}
 
-	def renderJson(): String = { null }
+	 def renderJson(): String = { null }
 
-	def renderXml(): String = {null}
+	 def renderXml(): String = {null}
 }
 
 class CurrentTurnReply(var snapshot: _root_.game.GameboardSnapshot) extends BaseReply with boardDrawer {
 
 
-	def renderHtml(): String = {
+	 def renderHtml(): String = {
 
 		val s: StringBuffer = new StringBuffer
 		s.append("<h1 id=\"turnName\">" + snapshot.turn + "</h1>\n")
-		return s.append(drawHtmlBoard(snapshot.playField)).toString
+		s.append(drawHtmlBoard(snapshot.playField, snapshot.redStones.toString, snapshot.greenStones.toString))
+		return s.append("<input type=\"button\" id=\"Button2\" value=\"Reset Playfield\" onclick=\"ResetCookie()\" />").toString
 	}
 
-	def renderJson(): String = { null }
+	 def renderJson(): String = { null }
 
-	def renderXml(): String = {null}
+	 def renderXml(): String = {null}
 
 }
 
 class PlayerReply(val log: java.util.ArrayList[String]) extends BaseReply {
 
-	def renderHtml(): String = {
+	 def renderHtml(): String = {
 		val s: StringBuffer = new StringBuffer
 		var iterator = log.iterator()
 		
@@ -128,16 +164,16 @@ class PlayerReply(val log: java.util.ArrayList[String]) extends BaseReply {
 
 	}
 
-	def renderJson(): String = { null }
+	 def renderJson(): String = { null }
 
-	def renderXml(): String = {null}
+	 def renderXml(): String = {null}
 
 }
 
 
 trait boardDrawer {
 
-	def drawHtmlBoard(playField: Array[Array[String]]): String = {
+	def drawHtmlBoard(playField: Array[Array[String]], redCount: String, greenCount: String): String = {
 		val red: String = "/webresources/images/32x32/red.gif"
 		val green: String = "/webresources/images/32x32/green.gif"
 		val redmark: String = "/webresources/images/32x32/redmark.gif"
@@ -148,6 +184,13 @@ trait boardDrawer {
 
 		val s: StringBuffer = new StringBuffer
 		s.append("<table>\n")
+		s.append("<tr>\n")
+		s.append("<td><img src=\"/webresources/images/32x32/red.gif\"/></td><td>" + redCount + "</td>\n")
+		s.append("<td><img src=\"/webresources/images/32x32/green.gif\"/></td><td>" + greenCount + "</td>\n")
+		s.append("</tr>\n")
+		s.append("</table>\n")
+
+		s.append("<table id=\"playfield\">\n")
 		
 		for (i <- 0 to 7) {
 			s.append("<tr>\n")

@@ -37,7 +37,7 @@ public class Game extends BaseResource {
     
     @Override
 	public void handleGetters() {
-		getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()); // null
+//		getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()); // null
 
 	}
     
@@ -47,7 +47,7 @@ public class Game extends BaseResource {
     public String handleGetHTML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()).renderHtml(); // null
 
         
         return getRepresentationHTML();
@@ -59,7 +59,7 @@ public class Game extends BaseResource {
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()).renderJson(); // null
 
         
         return getRepresentationJSON();
@@ -71,7 +71,7 @@ public class Game extends BaseResource {
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-        getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getGame(getSource()).renderXml(); // null
 
         
         return getRepresentationXML();

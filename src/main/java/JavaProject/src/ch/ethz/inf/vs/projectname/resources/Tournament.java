@@ -37,7 +37,7 @@ public class Tournament extends BaseResource {
     
     @Override
 	public void handleGetters() {
-		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderHtml(); // null
+//		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderHtml(); // null
 
 	}
     
@@ -59,7 +59,7 @@ public class Tournament extends BaseResource {
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-//        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderJson(); // null
 
         
         return getRepresentationJSON();
@@ -71,7 +71,7 @@ public class Tournament extends BaseResource {
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-//        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderXml(); // null
 
         
         return getRepresentationXML();
@@ -84,7 +84,7 @@ public class Tournament extends BaseResource {
 		parseResourceInformation(request, uri);
 		// No Poster Description Given
 		ch.ethz.inf.vs.projectname.Handler.postTournament(getSource(), posterVar);
- 
+ 		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderHtml();
 		return getRepresentationHTML();
 	}
 
@@ -116,7 +116,7 @@ public class Tournament extends BaseResource {
 		ResourceProtector.protect(request, authorizedHashesPost);		parseResourceInformation(request, uri);
 		// No Poster Description Given
 		ch.ethz.inf.vs.projectname.Handler.postTournament(getSource(), posterVar);
- 
+ 		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderJson();
 		return getRepresentationJSON();
 	} 
 	
@@ -126,7 +126,7 @@ public class Tournament extends BaseResource {
 		ResourceProtector.protect(request, authorizedHashesPost);		parseResourceInformation(request, uri);
 		// No Poster Description Given
 		ch.ethz.inf.vs.projectname.Handler.postTournament(getSource(), posterVar);
- 
+ 		getterValue = ch.ethz.inf.vs.projectname.Handler.getTournament(getSource()).renderXml();
 		return getRepresentationXML();
 	} 
 	

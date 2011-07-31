@@ -3,7 +3,6 @@ package player
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Actor._
-//import akka.remote.{RemoteClient, RemoteNode, RemoteServer}
 import akka.util.Logging
 import java.util.ArrayList
 import java.net.InetSocketAddress
@@ -16,21 +15,19 @@ class Player(val port: Int, val game: ActorRef, val gamePort: Int) extends Actor
 
   var playerLog: ArrayList[String] = new ArrayList()
 
-  //self.homeAddress = ("localhost", port)
 
   override def preStart() {
-//	  game ! "Player can send messages to Game"
-//	  game ! _root_.messages.Started(port)
+
   }
 
   override def postStop() {
 	
-
   }
 
   def receive = {
     case PlayerStart() =>
 	game ! _root_.messages.Started(port)
+
     case LoadPlayer(name, color) => 
       val player = util.PlayerLoader.load(name)
       val logPrefix = "from player " + port + "(" + color + "): "

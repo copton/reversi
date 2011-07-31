@@ -19,6 +19,11 @@
 			setCookie("turn", turnName, 1);
 			setTimeout("location.reload(true);",timeoutPeriod);
 		}
+
+		function ResetCookie() {
+			setCookie('turn','turnMinusOne','100');
+			window.location.reload();
+		}
 		//   -->
 </script>
 	

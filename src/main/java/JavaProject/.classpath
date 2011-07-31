@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="ch/ethz/inf/vs/projectname/resources/" kind="src" path="src"/>
+	<classpathentry kind="src" path="src/ch/ethz/inf/vs/projectname/resources"/>
+	<classpathentry kind="lib" path="lib/jdom/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/jersey/asm.jar"/>
+	<classpathentry kind="lib" path="lib/jersey/grizzly-servlet-webserver.jar"/>
+	<classpathentry kind="lib" path="lib/jersey/jersey-bundle.jar"/>
+	<classpathentry kind="lib" path="lib/jersey/jsr311.jar"/>
+	<classpathentry kind="lib" path="lib/json/json.jar"/>
+	<classpathentry kind="lib" path="lib/jython/jython.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.ext.xml.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/restlet/org.simpleframework.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,17 +1,23 @@
-div {
-	position:relative;
+ul#list-nav {
+margin:20px;
+padding:0;
+list-style:none;
+width:525px;
+
 }
+ul#list-nav li {
+display:inline
+}
+
+table#playfield{
+	
+	
+}
+
 table {
-	position:relative;
-/*	left:100px;
-	top:50px;*/
-	border:5px solid #000000;
-	border-spacing: 0px; }
-
-table a, table, tbody, tfoot, tr, th, td {
-	font-family: Arial, Helvetica, sans-serif;
-}
-
+	display:inline;
+	border-spacing: 0px;
+	margin:10px; }
 
 
 tbody th, tbody td {
@@ -19,7 +25,7 @@ tbody th, tbody td {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #000000;
 	padding: 10px 10px;
-	border: 1px solid #800000;
+	border: 1px solid #000000;
 	text-align: left; }
 
 body {
@@ -28,6 +34,7 @@ body {
 }
 
 ul.std {
+
 	line-height: 32px;
 	list-style-type: none;
 	font-size: medium;

@@ -37,7 +37,7 @@ public class Root extends BaseResource {
     
     @Override
 	public void handleGetters() {
-		getterValue = ch.ethz.inf.vs.projectname.Handler.getRoot(getSource()).renderHtml(); // null
+//		getterValue = ch.ethz.inf.vs.projectname.Handler.getRoot(getSource()).renderHtml(); // null
 
 	}
     
@@ -59,7 +59,7 @@ public class Root extends BaseResource {
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-//      getterValue = ch.ethz.inf.vs.projectname.Handler.getRoot(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getRoot(getSource()).renderJson(); // null
 
         
         return getRepresentationJSON();
@@ -71,7 +71,7 @@ public class Root extends BaseResource {
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-//      getterValue = ch.ethz.inf.vs.projectname.Handler.getRoot(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getRoot(getSource()).renderXml(); // null
 
         
         return getRepresentationXML();

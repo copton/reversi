@@ -1,6 +1,7 @@
 package tournament.plan
 
 import akka.actor._
+import java.util.ArrayList
 import scala.collection.immutable.List
 import tournament.misc.GameResult
 import tournament.misc.DummyGameResult
@@ -23,7 +24,7 @@ class DummyPlan extends Plan {
 	}
 
   
-	def requestGames: List[GameDetails] = {
+	def requestGames: List[(GameDetails, _root_.game.gameCreation)] = {
 
 		val red = Color.RED
 		val green = Color.GREEN
@@ -46,7 +47,7 @@ class DummyPlan extends Plan {
 		val gameDetails3 = new GameDetails(players3, List(option3))
 		
 		
-		return List(gameDetails1, gameDetails2/*, gameDetails3*/)
+		return List((gameDetails1, _root_.game.GameFactory), (gameDetails2, _root_.game.GameFactory)/*, (gameDetails3, _root_.game.GameFactory)*/)
     	
 	}
 
@@ -59,8 +60,18 @@ class DummyPlan extends Plan {
 		}
 	}
 
-	def getTournamentInfo: TournamentInfo = { null }
+	def getTournamentInfo: TournamentInfo = { new DummyTournamentInfo }
 
-	def getGameInfo(gameId: String): GameInfo = { null }
 
 }
+
+class DummyTournamentInfo extends TournamentInfo {
+
+	def getInfo: ArrayList[String] = {
+		var result: ArrayList[String] = new ArrayList()
+		result.add("this is just a Dummy")
+		result.add("but here could be information about the state of a real tournament")
+		return result
+	}
+}
+

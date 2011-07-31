@@ -59,7 +59,7 @@ public class Player extends BaseResource {
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-//        getterValue = ch.ethz.inf.vs.projectname.Handler.getPlayer(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getPlayer(getSource()).renderJson(); // null
 
         
         return getRepresentationJSON();
@@ -71,7 +71,7 @@ public class Player extends BaseResource {
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
         
         parseResourceInformation(request, uri);
-//      getterValue = ch.ethz.inf.vs.projectname.Handler.getPlayer(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getPlayer(getSource()).renderXml(); // null
 
         
         return getRepresentationXML();

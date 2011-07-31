@@ -1,7 +1,6 @@
 package game
 
 import akka.actor.{Actor, ActorRef}
-//import akka.remote
 import akka.util.Logging
 import java.util.ArrayList
 import scala.collection.immutable.TreeMap
@@ -24,10 +23,16 @@ class Player(val name: String, val port: Int, val color: Color, val uniqueTag: S
 	var log: ArrayList[String] = new ArrayList()
 }
 
+/**
+* Inherit from this trait to create your own GameFactory
+*/
 trait gameCreation {
 	def createGame(playerPorts: List[Int], details: GameDetails, tournament: ActorRef, uniqueTag: String): ActorRef
 }
 
+/**
+* Creates Reversi-Gameactors
+*/
 object GameFactory extends gameCreation {
 	private def createPlayer(className: String, playerPort: Int, playerColor: Color, uniqueTag: String): Player = {
 	
@@ -53,7 +58,7 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 	var possibleMoves: List[Position] = board.getPossibleMoves(Color.RED)
   	var nextMovePending = false
 	var winner: String = "not yet known"
-	var ssPlayer: Player = null
+	var ssPlayer: Player = null //For the snapshot
 	
 	var turnNumber: Int = 1
 	var turns: TreeMap[String, GameboardSnapshot] = new TreeMap()(new Ordering[String]{
@@ -141,7 +146,20 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 
 
   	def receive = {
+		
+		case EmergencyExit() =>
+			if(!finished) {
+	 			for (player <- players) {
+					player.actor.get ! _root_.messages.KillPlayer()
+	      				log.info("Game: I sended a KillPlayer() Message to " + "Player " + player.name + " The port is " + player.port)
+					Actor.remote.shutdownClientConnection(new InetSocketAddress("localhost", player.port))	
+	    			}
 			
+				var portsToReturn: List[Int] = players(0).port::players(1).port::Nil
+				tournament ! _root_.messages.EmergencyFinished(portsToReturn)
+			}
+		
+		
 
   		case StartGame() =>
 			for (player <- players) {
@@ -208,7 +226,8 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 			self.reply(result)
 
 		case WebGetGame() =>
-			self.reply("the winner is: " + winner)
+			val result: String = "the winner is: " + winner
+			self.reply(new GameReply(result))
 		
 		case WebGetTurn(turn: String) =>
 			val xturnNumber: Int = turn.substring(4, turn.length).toInt
@@ -220,13 +239,19 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 			self.reply(result)
 
 		case WebGetCurrentTurn(lastTurn: String) =>
-			println("game: lastturn is " + lastTurn)
-			val xturnNumber: Int = lastTurn.substring(4, lastTurn.length).toInt
-			val nextTurn: String = "turn" + (xturnNumber + 1).toString
-			if(turns.contains(nextTurn)) {
-				self.reply(new CurrentTurnReply(turns(nextTurn)))
-			} else {
-				self.reply(new CurrentTurnReply(turns(lastTurn)))
+			lastTurn match{
+			case "turnMinusOne" =>
+				self.reply(new CurrentTurnReply(turns("turn0")))
+
+			case _ =>
+				println("game: lastturn is " + lastTurn)
+				val xturnNumber: Int = lastTurn.substring(4, lastTurn.length).toInt
+				val nextTurn: String = "turn" + (xturnNumber + 1).toString
+				if(turns.contains(nextTurn)) {
+					self.reply(new CurrentTurnReply(turns(nextTurn)))
+				} else {
+					self.reply(new CurrentTurnReply(turns(lastTurn)))
+				}
 			}
 
 		case WebLoadPlayerCollection() =>
@@ -253,12 +278,16 @@ class Game(val gamePort: Int, val players: Array[Player], tournament: ActorRef, 
 			}
 			var result = new PlayerReply(playerOpt.get.log)
 			self.reply(result)
+
 			
 			
     		case msg => log.info("received message: " + msg)
   	}
 }
 
+/**
+* Abstraction for one turn. 
+*/
 class GameboardSnapshot {
 
 	var turn: String = "turn0"
@@ -313,15 +342,3 @@ class GameboardSnapshot {
 	}
 }
 
-
-//object RunGame {
-//	def main(args: Array[String]) {
-//	  val gamePort = 10000	
-//    val gameServer = Actor.remote.start("localhost", gamePort)
-//
-//    val playerRed = new Player("player.RandomPlayer", gamePort + 1, Color.RED)
-//    val playerGreen = new Player("player.RandomPlayer", gamePort + 2, Color.GREEN)
-//    val game = Actor.actorOf(new Game(gamePort, Array(playerRed, playerGreen)))
-//    gameServer.register("game"+gamePort, game)
-//	}
-//}

@@ -4,7 +4,6 @@ import akka.actor._
 import java.util.ArrayList
 import scala.collection.immutable.List
 import tournament.misc._
-import tournament.plan.TurnInfo
 import game.Player
 
 sealed trait Message
@@ -12,10 +11,11 @@ sealed trait Message
 //tournament
 	//from server
 	case class Start() extends Message
-	case class Stop() extends Message
+	case class Stop(plan: _root_.tournament.plan.Plan) extends Message
 	
 	//from game
 	case class GameFinished(game: GameResult, portsToRelease: List[Int], namingNumber: String) extends Message
+	case class EmergencyFinished(portsToRelease: List[Int]) extends Message
 
 	//from ressourceAdministrator
 	case class PermissionGranted() extends Message
@@ -54,7 +54,7 @@ sealed trait Message
 //resourceAdministrator
 
 	//from requester
-	case class RequestTournamentName() extends Message //TODO einer muss raus
+	case class RequestTournamentName() extends Message
 	case class RequestPorts(amount: Int) extends Message
 	case class ReleasePorts(portList: List[Int]) extends Message
 	case class RequestPermission() extends Message
@@ -62,7 +62,8 @@ sealed trait Message
 
 //game
 	// from Tournament
-	case class StartGame() extends Message	//Startmessage
+	case class StartGame() extends Message
+	case class EmergencyExit() extends Message
 	
 	// from Player
 	case class Started(port: Int) extends Message

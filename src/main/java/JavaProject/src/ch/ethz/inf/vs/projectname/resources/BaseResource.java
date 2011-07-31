@@ -160,6 +160,9 @@ public abstract class BaseResource {
 			parentURI = parentURI.substring(0, parentURI.length() - 1);
 		
 		representationBuildUp = representationBuildUp.replace("{{HomeUrl}}", "http://" + request.getServerName() + ":" + request.getServerPort());
+
+		representationBuildUp = representationBuildUp.replace("{{Domain}}", request.getServerName() );
+		representationBuildUp = representationBuildUp.replace("{{Path}}", resourceURI + "/");
 		
 		if (parentName != null && !parentName.isEmpty()) {
 			representationBuildUp = representationBuildUp.replace("{{ParentUrl}}", parentURI);

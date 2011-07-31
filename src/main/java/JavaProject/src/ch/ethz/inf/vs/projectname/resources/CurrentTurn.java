@@ -50,7 +50,7 @@ public class CurrentTurn extends BaseResource {
         try {
 		turn = request.getCookies()[0].getValue();
 	} catch (java.lang.NullPointerException e) {
-		turn = "turn0";
+		turn = "turnMinusOne";
 	}
 	asdfturn = turn;
 	System.out.println("the cookie containts: " + turn);
@@ -87,9 +87,16 @@ public class CurrentTurn extends BaseResource {
     @GET 
     @Produces("application/json")
     public String handleGetJSON(@Context HttpServletRequest request, @Context UriInfo uri) {
-        
+       String turn;
+        try {
+		turn = request.getCookies()[0].getValue();
+	} catch (java.lang.NullPointerException e) {
+		turn = "turnMinusOne";
+	}
+	asdfturn = turn;
+	System.out.println("the cookie containts: " + turn); 
         parseResourceInformation(request, uri);
-//        getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource()); // null
+        getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource(),turn).renderJson(); // null
 
         
         return getRepresentationJSON();
@@ -99,9 +106,16 @@ public class CurrentTurn extends BaseResource {
     @GET 
     @Produces("text/xml")
     public String handleGetXML(@Context HttpServletRequest request, @Context UriInfo uri) {
-        
+        String turn;
+        try {
+		turn = request.getCookies()[0].getValue();
+	} catch (java.lang.NullPointerException e) {
+		turn = "turn0";
+	}
+	asdfturn = turn;
+	System.out.println("the cookie containts: " + turn);
         parseResourceInformation(request, uri);
-  //      getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource()); // null
+      getterValue = ch.ethz.inf.vs.projectname.Handler.getCurrentTurn(getSource(),turn).renderXml(); // null
 
         
         return getRepresentationXML();
