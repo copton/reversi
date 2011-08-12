@@ -1,4 +1,3 @@
-lib
 lib_managed
 target
 logs
@@ -7,3 +6,4 @@ project/plugins/lib_managed
 project/plugins/src_managed
 project/plugins/project/build.properties
 .*.swp
+*.class
